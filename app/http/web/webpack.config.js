@@ -16,11 +16,23 @@ const config = {
   module: {
     rules: [
       {
-        test: /\.jsx?/,
-        loaders: [
-          'babel-loader',
+        test: /\.jsx?$/,
+        use: [
+          'babel-loader'
         ],
         exclude: '/node_modules',
+      },
+      {
+        test: /\.png$/,
+        use: [
+          'file-loader'
+        ],
+        exclude: '/node_modules',
+      },
+      {
+        test: /\.css$/,
+        loaders: ['style-loader', 'css-loader'],
+        include: __dirname + '/src'
       },
     ],
   },
