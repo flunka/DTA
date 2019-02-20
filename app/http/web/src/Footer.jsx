@@ -2,7 +2,7 @@ import React from 'react';
 
 function Footer(){
   return (
-<footer className="footer">
+<footer className="Footer">
 
   <div className="text-center py-3">© 2018 Copyright:
     <a href="#"> flunka.net</a>

@@ -10,8 +10,8 @@ import Footer from './Footer.jsx';
 
 function App(argument) {
   return (
-    <div className="Content">
-      <Header />
+    <div className="Content w-100">
+      <Header />      
       <Content />
       <Footer />
     </div>
