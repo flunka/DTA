@@ -1,24 +1,31 @@
 import React from 'react';
-import {Container, Row, Col} from 'react-bootstrap';
+import {Row, Col, Button} from 'react-bootstrap';
 
 
 import Sidebar from './Sidebar.jsx';
+import MainPanel from './MainPanel.jsx';
 
+class Content extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      toRender: 0
+    }
+    this.sidebarClick = this.sidebarClick.bind(this);
+  }
 
+  sidebarClick(i){
+    this.setState({toRender: i});
+  }
 
-function Content(argument) {
-  return (
-    <Container className="p-0 m-0 w-100 mw-100" fulid>
-      <Row noGutters>
-        <Col sm={3}>
-        <Sidebar />
-        </Col>
-        <Col id="Content" sm={9}>
-          <p>Content</p>
-        </Col>
+  render(){
+    return (
+      <Row noGutters>          
+        <Sidebar buttonOnClick={this.sidebarClick} />          
+        <MainPanel toRender={this.state.toRender} />
       </Row>
-    </Container>
-    )
+    )   
+  }
 }
 
 export default Content

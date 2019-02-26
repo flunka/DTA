@@ -13,7 +13,7 @@ function Header(argument) {
         height="30"
         className="d-inline-block align-top"
       />
-      {' DTA App'}
+      {' DTA App | v0.0'}
     </Navbar.Brand>
   </Navbar>
     )
