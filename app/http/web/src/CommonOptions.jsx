@@ -6,7 +6,7 @@ function CommonOptions(argument) {
   return (
     <Container className="p-0 m-0 w-100 mw-100">
       <Row noGutters>
-        <Button variant="info" size="lg" block>Run</Button>
+        <Button variant="info" size="lg" type="submit" block>Run</Button>
       </Row>
       <Row noGutters>{/*File Uploads*/}
         <Col>
