@@ -1,12 +1,15 @@
 import React from 'react';
 
-import {Col, Form} from 'react-bootstrap';
+import {Alert, Col, Row, Form} from 'react-bootstrap';
 import {RingLoader} from 'react-spinners';
 
 import CommonOptions from './CommonOptions.jsx';
-import GlobalMethodOptions from './GlobalMethodOptions.jsx';
-import ClusteringMethodOptions from './ClusteringMethodOptions.jsx';
-import PointWiseLocalMethodOptions from './PointWiseLocalMethodOptions.jsx';
+import GlobalMethodOptionsDose from './GlobalMethodOptionsDose.jsx';
+import GlobalMethodOptionsDistance from './GlobalMethodOptionsDistance.jsx';
+import ClusteringMethodOptionsDose from './ClusteringMethodOptionsDose.jsx';
+import ClusteringMethodOptionsDistance from './ClusteringMethodOptionsDistance.jsx';
+import PointWiseLocalMethodOptionsDose from './PointWiseLocalMethodOptionsDose.jsx';
+import PointWiseLocalMethodOptionsDistance from './PointWiseLocalMethodOptionsDistance.jsx';
 
 
 class MainPanel extends React.Component {
@@ -47,9 +50,26 @@ class MainPanel extends React.Component {
         /></div>) :
         (<Form onSubmit={e => this.handleSubmit(e)}>
           <CommonOptions />
-          { this.props.toRender === 0 && <GlobalMethodOptions />}
-          { this.props.toRender === 1 && <ClusteringMethodOptions />}
-          { this.props.toRender === 2 && <PointWiseLocalMethodOptions />}
+          <Row noGutters>
+            <Col>
+            <Alert variant='dark' className='m-0 p-0 text-center'>Dose quality assessment</Alert>
+              { this.props.doseMethodToRender === 0 && 
+                <GlobalMethodOptionsDose />}
+              { this.props.doseMethodToRender === 1 && 
+                <ClusteringMethodOptionsDose />}
+              { this.props.doseMethodToRender === 2 && 
+                <PointWiseLocalMethodOptionsDose />}
+            </Col>
+            <Col>
+            <Alert variant='dark' className='m-0 p-0 text-center'>Distance to agreement assessment</Alert>
+              { this.props.distanceMethodToRender === 0 && 
+                <GlobalMethodOptionsDistance />}
+              { this.props.distanceMethodToRender === 1 && 
+                <ClusteringMethodOptionsDistance />}
+              { this.props.distanceMethodToRender === 2 && 
+                <PointWiseLocalMethodOptionsDistance />}
+            </Col>
+          </Row>
         </Form>)
         }
       </Col>

@@ -1,23 +1,28 @@
 import React from 'react';
-import {Col, Button} from 'react-bootstrap'
+import {Alert, Col, Button} from 'react-bootstrap'
 
 class Sidebar extends React.Component {
   constructor(props){
     super(props);
   }
 
-  renderSidebarButton(name, i){
+  renderSidebarButton(name, i, type){
     return (
-        <Button variant="secondary" className="m-0" block onClick={() => this.props.buttonOnClick(i)}>{name}</Button>
+        <Button variant="secondary" className="m-0" block onClick={() => this.props.buttonOnClick(i, type)}>{name}</Button>
       )
   }
 
   render(){
     return (
       <Col sm={3} id="sidebar">
-        {this.renderSidebarButton("Global mathod", 0)}
-        {this.renderSidebarButton("Clustering mathod", 1)}
-        {this.renderSidebarButton("Point-wise local mathod", 2)}
+        <Alert variant='dark' className='m-0 p-0 text-center'>Dose quality assessment</Alert>
+        {this.renderSidebarButton("Global method", 0, 1)}
+        {this.renderSidebarButton("Clustering method", 1, 1)}
+        {this.renderSidebarButton("Point-wise local method", 2, 1)}
+        <Alert variant='dark' className='m-0 p-0 text-center'>Distance to agreement assessment</Alert>
+        {this.renderSidebarButton("Global method", 0, 2)}
+        {this.renderSidebarButton("Clustering method", 1, 2)}
+        {this.renderSidebarButton("Point-wise local method", 2, 2)}
       </Col>
     )
 

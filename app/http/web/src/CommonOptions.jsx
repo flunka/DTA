@@ -14,12 +14,14 @@ function CommonOptions(argument) {
             <Form.Label>Planned dose file</Form.Label>
             <Form.Control type="file" />
           </Form.Group>
+          <Button variant="secondary"  block>Show Plan</Button>
         </Col>
         <Col>
           <Form.Group controlId="formUploadAppliedDose">
             <Form.Label>Applied dose file</Form.Label>
             <Form.Control type="file" />
           </Form.Group>
+          <Button variant="secondary" block>Show Realization</Button>
         </Col>
       </Row>
       <Row noGutters>{/*Methods checkboxes*/}
@@ -70,6 +72,14 @@ function CommonOptions(argument) {
                   <Form.Control inline="true" type="number" placeholder="0.00" min="0" max="99.99" step="0.01" />
                 </Col>
               </Form.Group>
+            </Col>
+          </Row>
+          <Row noGutters>
+            <Col>
+              <Button variant="secondary" block>Adjust doses</Button>
+            </Col>
+            <Col>
+              <Button variant="secondary" block>Align doses</Button>
             </Col>
           </Row>
         </Col>        
