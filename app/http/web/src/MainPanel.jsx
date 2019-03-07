@@ -49,7 +49,10 @@ class MainPanel extends React.Component {
           loading={this.state.loading}
         /></div>) :
         (<Form onSubmit={e => this.handleSubmit(e)}>
-          <CommonOptions />
+          <CommonOptions 
+          handleSelectedFile={this.props.handleSelectedFile}
+          uploadButtons={this.props.uploadButtons}
+          handeClickUploadButton={this.props.handeClickUploadButton} />
           <Row noGutters>
             <Col>
             <Alert variant='dark' className='m-0 p-0 text-center'>Dose quality assessment</Alert>

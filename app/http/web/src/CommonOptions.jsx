@@ -2,7 +2,9 @@ import React from 'react';
 
 import {Container, Row, Col, Form, Button} from 'react-bootstrap';
 
-function CommonOptions(argument) {
+import UploadingButton from './UploadingButton.jsx';
+
+function CommonOptions(props) {
   return (
     <Container className="p-0 m-0 w-100 mw-100">
       <Row noGutters>
@@ -12,15 +14,21 @@ function CommonOptions(argument) {
         <Col>
           <Form.Group controlId="formUploadPlannedDose">
             <Form.Label>Planned dose file</Form.Label>
-            <Form.Control type="file" />
+            <Form.Control type="file" onChange={(event) => props.handleSelectedFile(event, 0)} />
           </Form.Group>
+          <UploadingButton options={props.uploadButtons[0]}
+          type={0} 
+          handeClickUploadButton={props.handeClickUploadButton}/>
           <Button variant="secondary"  block>Show Plan</Button>
         </Col>
         <Col>
           <Form.Group controlId="formUploadAppliedDose">
             <Form.Label>Applied dose file</Form.Label>
-            <Form.Control type="file" />
+            <Form.Control type="file" onChange={(event) => props.handleSelectedFile(event, 1)} />
           </Form.Group>
+          <UploadingButton options={props.uploadButtons[1]}
+          type={1}
+          handeClickUploadButton={props.handeClickUploadButton}/>
           <Button variant="secondary" block>Show Realization</Button>
         </Col>
       </Row>
