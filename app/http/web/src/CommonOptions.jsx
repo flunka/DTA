@@ -3,6 +3,7 @@ import React from 'react';
 import {Container, Row, Col, Form, Button} from 'react-bootstrap';
 
 import UploadingButton from './UploadingButton.jsx';
+import ShowButton from './ShowButton.jsx';
 
 function CommonOptions(props) {
   return (
@@ -19,7 +20,8 @@ function CommonOptions(props) {
           <UploadingButton options={props.uploadButtons[0]}
           type={0} 
           handeClickUploadButton={props.handeClickUploadButton}/>
-          <Button variant="secondary"  block>Show Plan</Button>
+          <ShowButton text="Show Plan"
+          type='planned' />
         </Col>
         <Col>
           <Form.Group controlId="formUploadAppliedDose">
@@ -29,7 +31,8 @@ function CommonOptions(props) {
           <UploadingButton options={props.uploadButtons[1]}
           type={1}
           handeClickUploadButton={props.handeClickUploadButton}/>
-          <Button variant="secondary" block>Show Realization</Button>
+          <ShowButton text="Show Realization"
+          type='applied' />
         </Col>
       </Row>
       <Row noGutters>{/*Methods checkboxes*/}

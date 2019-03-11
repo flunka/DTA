@@ -28,7 +28,7 @@ class MainPanel extends React.Component {
     const data = new FormData(event.target);
     
     this.setState({loading: true});
-    fetch('http://localhost:5000/', {
+    fetch(process.env.API_URL, {
           method: 'POST',
           body: data,
         })

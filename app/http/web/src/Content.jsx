@@ -68,8 +68,9 @@ class Content extends React.Component {
       form.append('applied_dose_file', file);      
     }
 
-    fetch('http://localhost:5000/Upload', { // Your POST endpoint
+    fetch(process.env.API_URL +'/Upload', { // Your POST endpoint
       method: 'POST',
+      credentials: "include",
       body: form // This is your file object
     }).then(
       response => response.json() // if the response is a JSON object

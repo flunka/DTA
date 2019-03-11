@@ -17,7 +17,7 @@ class UploadingButton extends React.Component{
         onClick={!(this.props.options.isLoading || this.props.options.isLoaded) 
           ?(e) => this.props.handeClickUploadButton(this.props.type) : null}
       >
-      {this.props.options.isLoading === this.props.options.isLoaded && 'Upload'}
+      {this.props.options.isLoading == this.props.options.isLoaded && 'Upload'}
       {this.props.options.isLoading && 'Uploading...'}
       {this.props.options.isLoaded && 'Uploaded!'}
       </Button>
