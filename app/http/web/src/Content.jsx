@@ -58,6 +58,7 @@ class Content extends React.Component {
       isLoading: true,
       isLoaded:false
     }
+    this.setState({uploadButtons: uploadButtons});
     const file = uploadButtons[type].file;
     
     const form = new FormData();
