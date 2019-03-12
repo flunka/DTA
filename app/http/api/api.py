@@ -52,7 +52,7 @@ class GetImage(Resource):
     else:
       return abort(403, error_message='No type of image')
     if 'id' in session:
-      url = "".join(('http://localhost:5000/static/upload/', session['id'], file))
+      url = "".join(('/upload/', session['id'], file))
       return {'image': url}
     else:
       return abort(403, error_message='No session id')
