@@ -5,7 +5,7 @@ function Footer(){
 <footer className="Footer">
 
   <div className="text-center py-3">© 2019 Copyright:
-    <a href="flunka.pl"> Piotr Banaś</a>
+    <a href="http://flunka.pl"> Piotr Banaś</a>
   </div>
 
 </footer>
