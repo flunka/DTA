@@ -36,8 +36,8 @@ module.exports = (env) =>{
       indexPage: './src/index.jsx',
   },
   output: {
-    path: __dirname + '/dist',
-    publicPath: '/dist',
+    path: __dirname + '/dist/',
+    publicPath: '/dist/',
     filename: '[name].js',
   },
   module: {
