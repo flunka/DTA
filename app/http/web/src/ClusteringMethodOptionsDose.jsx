@@ -4,7 +4,7 @@ import {Container, Row, Col, Form} from 'react-bootstrap';
 
 function ClusteringMethodOptionsDose(argument) {
   return (
-      <Container className='m-0 p-0'>
+      <Container className='ml-1 p-0'>
         <Row noGutters>
           <label>Clustering method</label>
           <Form.Check type="radio" name="method" label="Gaussian mixture" id="gaussian-radio" />

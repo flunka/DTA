@@ -5,7 +5,7 @@ import {Container, Row, Col, Form} from 'react-bootstrap';
 function PointWiseLocalMethodOptionsDistance(argument) {
   return (
       <Container className='m-0 p-0'>
-        <Row noGutters>
+        <Row noGutters className="ml-1">
           <Row noGutters className='mw-100 w-100'>
             <label>Method</label>
           </Row>
@@ -23,7 +23,7 @@ function PointWiseLocalMethodOptionsDistance(argument) {
           </Form.Group>
 
         </Row>
-        <Row noGutters>
+        <Row noGutters className="ml-1">
           <Form.Group className='mw-100 w-100' as={Row} noGutters controlId="formMaxProbabilityPTHOfError">
             <Form.Label column sm="8">Maximal probability PTH of type II error</Form.Label>
             <Col sm="4">

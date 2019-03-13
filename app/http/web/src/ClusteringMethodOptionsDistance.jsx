@@ -4,13 +4,13 @@ import {Container, Row, Col, Form} from 'react-bootstrap';
 
 function ClusteringMethodOptionsDistance(argument) {
   return (
-    <Container>
-      <Row noGutters>
+    <Container className='m-0 p-0'>
+      <Row noGutters className="ml-1">
         <label>Clustering method</label>
         <Form.Check type="radio" name="method" label="Gaussian mixture" id="gaussian-radio" />
         <Form.Check type="radio" name="method" label="K-means clustering" id="k-means-radio" />
       </Row>
-      <Row noGutters>
+      <Row noGutters className="ml-1">
         <Form.Group as={Row} className='mw-100 w-100' noGutters controlId="formSuggestedTolerance">
           <Col sm="8">
             <Form.Check type="checkbox" label="Sugest tolerance at prob. level" id="sugested-tolerance" />
