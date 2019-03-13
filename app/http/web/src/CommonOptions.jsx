@@ -16,12 +16,10 @@ function CommonOptions(props) {
           <Form.Group controlId="formUploadPlannedDose">
             <Form.Label>Planned dose file</Form.Label>
             <Form.Control type="file" onChange={(event) => props.handleSelectedFile(event, 0)} />
-          </Form.Group>
-          <UploadingButton options={props.uploadButtons[0]}
-          type={0} 
-          handeClickUploadButton={props.handeClickUploadButton}/>
-          <ShowButton text="Show Plan"
-          type='planned' />
+          </Form.Group>   
+            <UploadingButton options={props.uploadButtons[0]}
+              type={0} 
+              handeClickUploadButton={props.handeClickUploadButton}/> 
         </Col>
         <Col>
           <Form.Group controlId="formUploadAppliedDose">
@@ -29,10 +27,8 @@ function CommonOptions(props) {
             <Form.Control type="file" onChange={(event) => props.handleSelectedFile(event, 1)} />
           </Form.Group>
           <UploadingButton options={props.uploadButtons[1]}
-          type={1}
-          handeClickUploadButton={props.handeClickUploadButton}/>
-          <ShowButton text="Show Realization"
-          type='applied' />
+            type={1}
+            handeClickUploadButton={props.handeClickUploadButton}/>
         </Col>
       </Row>
       <Row noGutters>{/*Methods checkboxes*/}
@@ -83,14 +79,6 @@ function CommonOptions(props) {
                   <Form.Control inline="true" type="number" placeholder="0.00" min="0" max="99.99" step="0.01" />
                 </Col>
               </Form.Group>
-            </Col>
-          </Row>
-          <Row noGutters>
-            <Col>
-              <Button variant="secondary" block>Adjust doses</Button>
-            </Col>
-            <Col>
-              <Button variant="secondary" block>Align doses</Button>
             </Col>
           </Row>
         </Col>        

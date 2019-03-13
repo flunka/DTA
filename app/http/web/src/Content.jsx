@@ -14,12 +14,14 @@ class Content extends React.Component {
       isLoaded: false
     };*/
     this.state = {
-      doseMethodToRender: 0,
-      distanceMethodToRender: 0,
+      sidebar: Array(2).fill({
+        methodToRender: 0
+      }),
       uploadButtons: Array(2).fill({
         file: null,
         isLoading: false,
-        isLoaded: false
+        isLoaded: false,
+        variant: 'secondary'
       })
     };
     this.sidebarClick = this.sidebarClick.bind(this);
@@ -31,7 +33,8 @@ class Content extends React.Component {
     uploadButtons[type] = {
       file: event.target.files[0],
       isLoading: false,
-      isLoaded: false
+      isLoaded: false,
+      variant: 'info'
     }
     this.setState({
       uploadButtons: uploadButtons
@@ -40,15 +43,16 @@ class Content extends React.Component {
 
   sidebarClick(i, type){
     /* 
-    type == 1 - dose change
-    type == 2 - distance change
+    type == 0 - dose change
+    type == 1 - distance change
     */
-    if (type==1) {
-      this.setState({doseMethodToRender: i});
+    const sidebar = this.state.sidebar.slice();
+    sidebar[type] = {
+      methodToRender: i
     }
-    else if (type == 2) {
-      this.setState({distanceMethodToRender: i});
-    }    
+    this.setState({
+      sidebar: sidebar
+    }) 
   }
 
   handeClickUploadButton(type) {
@@ -56,7 +60,8 @@ class Content extends React.Component {
     uploadButtons[type] = {
       file: uploadButtons[type].file,
       isLoading: true,
-      isLoaded:false
+      isLoaded:false,
+      variant: 'info'
     }
     this.setState({uploadButtons: uploadButtons});
     const file = uploadButtons[type].file;
@@ -79,7 +84,8 @@ class Content extends React.Component {
       success => (
           uploadButtons[type] = {
             isLoading: false,
-            isLoaded: true
+            isLoaded: true,
+            variant: 'success'
           },
           this.setState({
             uploadButtons: uploadButtons
@@ -89,7 +95,8 @@ class Content extends React.Component {
       error => (
           uploadButtons[type] = {
             isLoading: false,
-            isLoaded: false
+            isLoaded: false,
+            variant: 'danger'
           },
           this.setState({
             uploadButtons: uploadButtons
@@ -103,8 +110,7 @@ class Content extends React.Component {
       <Row noGutters>          
         <Sidebar buttonOnClick={this.sidebarClick} />    
         <MainPanel 
-          doseMethodToRender={this.state.doseMethodToRender}
-          distanceMethodToRender={this.state.distanceMethodToRender}
+          sidebar={this.state.sidebar}
           handleSelectedFile={this.handleSelectedFile}
           uploadButtons={this.state.uploadButtons}
           handeClickUploadButton={this.handeClickUploadButton.bind(this)} />

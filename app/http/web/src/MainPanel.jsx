@@ -56,20 +56,20 @@ class MainPanel extends React.Component {
           <Row noGutters>
             <Col>
             <Alert variant='dark' className='m-0 p-0 text-center'>Dose quality assessment</Alert>
-              { this.props.doseMethodToRender === 0 && 
+              { this.props.sidebar[0].methodToRender === 0 && 
                 <GlobalMethodOptionsDose />}
-              { this.props.doseMethodToRender === 1 && 
+              { this.props.sidebar[0].methodToRender === 1 && 
                 <ClusteringMethodOptionsDose />}
-              { this.props.doseMethodToRender === 2 && 
+              { this.props.sidebar[0].methodToRender === 2 && 
                 <PointWiseLocalMethodOptionsDose />}
             </Col>
             <Col>
             <Alert variant='dark' className='m-0 p-0 text-center'>Distance to agreement assessment</Alert>
-              { this.props.distanceMethodToRender === 0 && 
+              { this.props.sidebar[1].methodToRender === 0 && 
                 <GlobalMethodOptionsDistance />}
-              { this.props.distanceMethodToRender === 1 && 
+              { this.props.sidebar[1].methodToRender === 1 && 
                 <ClusteringMethodOptionsDistance />}
-              { this.props.distanceMethodToRender === 2 && 
+              { this.props.sidebar[1].methodToRender === 2 && 
                 <PointWiseLocalMethodOptionsDistance />}
             </Col>
           </Row>

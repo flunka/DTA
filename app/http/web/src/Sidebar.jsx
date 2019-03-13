@@ -1,12 +1,14 @@
 import React from 'react';
-import {Alert, Col, Button, Collapse} from 'react-bootstrap'
+import {Alert, Col, Button, Collapse} from 'react-bootstrap';
+import ShowButton from './ShowButton.jsx';
 
 class Sidebar extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      doseIsOpen: false,
-      distanceIsOpen: false
+      navItems: Array(3).fill({
+        isOpen: false
+      })
     }
   }
 
@@ -17,12 +19,13 @@ class Sidebar extends React.Component {
   }
 
   sidebarOnClick(i){
-    if (i==1) {
-      this.setState({ doseIsOpen: !this.state.doseIsOpen})
+    const navItems = this.state.navItems.slice();
+    navItems[i] = {
+      isOpen: !this.state.navItems[i].isOpen
     }
-    else if (i==2) {
-      this.setState({ distanceIsOpen: !this.state.distanceIsOpen})
-    }
+    this.setState({
+      navItems: navItems
+    })
     
   }
 
@@ -32,16 +35,36 @@ class Sidebar extends React.Component {
         <Alert 
           variant='dark' 
           className='m-0 p-0 text-center'
+          onClick={() => this.sidebarOnClick(0)}
+          aria-controls="example-collapse-text"
+          aria-expanded={this.state.navItems[0].isOpen}>
+          Actions
+        </Alert>
+        <Collapse in={this.state.navItems[0].isOpen}>
+          <div id="actions">
+            <ShowButton text="Show Plan"
+              type='planned' />
+            <ShowButton text="Show Realization"
+              type='applied' />
+            <Button className="m-0" variant="secondary" block>Adjust doses
+            </Button>
+            <Button className="m-0" variant="secondary" block>Align doses
+            </Button>
+          </div>
+        </Collapse>
+        <Alert 
+          variant='dark' 
+          className='m-0 p-0 text-center'
           onClick={() => this.sidebarOnClick(1)}
           aria-controls="dose-method"
-          aria-expanded={this.state.doseIsOpen}>
+          aria-expanded={this.state.navItems[1].isOpen}>
           Dose quality assessment
         </Alert>
-        <Collapse in={this.state.doseIsOpen}>
+        <Collapse in={this.state.navItems[1].isOpen}>
           <div id="dose-method">
-            {this.renderSidebarButton("Global method", 0, 1)}
-            {this.renderSidebarButton("Clustering method", 1, 1)}
-            {this.renderSidebarButton("Point-wise local method", 2, 1)}
+            {this.renderSidebarButton("Global method", 0, 0)}
+            {this.renderSidebarButton("Clustering method", 1, 0)}
+            {this.renderSidebarButton("Point-wise local method", 2, 0)}
           </div>
         </Collapse>
         <Alert 
@@ -49,16 +72,17 @@ class Sidebar extends React.Component {
           className='m-0 p-0 text-center'
           onClick={() => this.sidebarOnClick(2)}
           aria-controls="example-collapse-text"
-          aria-expanded={this.state.distanceIsOpen}>
+          aria-expanded={this.state.navItems[2].isOpen}>
           Distance to agreement assessment
         </Alert>
-        <Collapse in={this.state.distanceIsOpen}>
+        <Collapse in={this.state.navItems[2].isOpen}>
           <div id="distance-method">
-            {this.renderSidebarButton("Global method", 0, 2)}
-            {this.renderSidebarButton("Clustering method", 1, 2)}
-            {this.renderSidebarButton("Point-wise local method", 2, 2)}
+            {this.renderSidebarButton("Global method", 0, 1)}
+            {this.renderSidebarButton("Clustering method", 1, 1)}
+            {this.renderSidebarButton("Point-wise local method", 2, 1)}
           </div>
         </Collapse>
+        
       </Col>
     )
 

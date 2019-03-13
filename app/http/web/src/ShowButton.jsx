@@ -32,13 +32,13 @@ class ShowButon extends React.Component {
   }
   render(){
     const popover = (
-      <Popover id="popover-basic" >
+      <Popover className="mw-100" id="popover-basic" >
         <Image src={this.state.url} />
       </Popover>
     );
     return(
-        <OverlayTrigger trigger="click" placement="bottom" overlay={popover}>
-          <Button variant="secondary" onClick={() => this.get_image(this.props.type)}>{this.props.text}</Button>
+        <OverlayTrigger trigger="click" placement="right" overlay={popover}>
+          <Button block variant="secondary" className="m-0" onClick={() => this.get_image(this.props.type)}>{this.props.text}</Button>
         </OverlayTrigger>
       )
 
