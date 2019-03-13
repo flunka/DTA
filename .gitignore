@@ -26,4 +26,5 @@ yarn-error.log*
 
 app/http/api/static/upload/
 app/http/web/upload/
+app/http/web/dits/
 app/http/api/__pycache__/
