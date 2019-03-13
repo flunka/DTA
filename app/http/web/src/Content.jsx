@@ -79,7 +79,13 @@ class Content extends React.Component {
       credentials: "include",
       body: form // This is your file object
     }).then(
-      response => response.json() // if the response is a JSON object
+      response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Something went wrong');
+        }
+      }
     ).then(
       success => (
           uploadButtons[type] = {
