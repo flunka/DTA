@@ -15,7 +15,7 @@ def make_applied_dose_image(file_name, path):
       elif(dose and "COL" in line):
         col = True
       elif(dose and not col):
-        data.append([float(x) for x in line.split("\t")[2:-1]])
+        data.append([float(x) for x in line.rstrip().split("\t")[2:]])
       elif col:
         dataX = [float(x) for x in line.split('\t')[2:-1]]
         col = False
@@ -32,14 +32,19 @@ def make_applied_dose_image(file_name, path):
 
 def make_planned_dose_image(file_name, path):
   file = "".join((path, file_name))
+  omited_begining_lines = 0
   with open(file) as f:
     data = []
     for idx, line in enumerate(f):
       if(idx == 5):
         dataX = [float(x) / 10 for x in line.split("\t")[1:-1]]
       elif(idx > 5):
-        data.append([float(x) for x in line.split("\t")[1:-1]])  # Zapytać
-  doses = np.array(data)
+        if(omited_begining_lines < 11):
+          omited_begining_lines += 1
+        else:
+          data.append([float(x) for x in line.split("\t")[15:-12]])  # Zapytać
+  doses = np.array(data[:-4])
+  print(doses)
   colunms, rows = np.shape(doses)
   image = np.zeros([colunms, rows])
   image[:, :] = doses
