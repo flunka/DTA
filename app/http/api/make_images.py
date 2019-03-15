@@ -23,12 +23,11 @@ def make_applied_dose_image(file_name, path):
         break
   doses = np.array(data[1:])
   colunms, rows = np.shape(doses)
-  image = np.zeros([colunms, rows, 3])
-  image[:, :, 0] = doses
-  image[:, :, 1] = doses
-  image[:, :, 2] = doses
+  image = np.zeros([colunms, rows])
+  image[:, :] = doses
   image = cv.resize(image, None, fx=5, fy=5, interpolation=cv.INTER_CUBIC)
-  cv.imwrite("".join((path, "/applied.jpg")), image)
+  normalized_image = cv.normalize(image, None, 255, 0, cv.NORM_MINMAX, cv.CV_8UC1)
+  cv.imwrite("".join((path, "/applied.jpg")), normalized_image)
 
 
 def make_planned_dose_image(file_name, path):
@@ -42,8 +41,7 @@ def make_planned_dose_image(file_name, path):
         data.append([float(x) for x in line.split("\t")[1:-1]])  # Zapytać
   doses = np.array(data)
   colunms, rows = np.shape(doses)
-  image = np.zeros([colunms, rows, 3])
-  image[:, :, 0] = doses
-  image[:, :, 1] = doses
-  image[:, :, 2] = doses
-  cv.imwrite("".join((path, "plan.jpg")), image)
+  image = np.zeros([colunms, rows])
+  image[:, :] = doses
+  normalized_image = cv.normalize(image, None, 255, 0, cv.NORM_MINMAX, cv.CV_8UC1)
+  cv.imwrite("".join((path, "plan.jpg")), normalized_image)
