@@ -89,6 +89,7 @@ class Content extends React.Component {
     ).then(
       success => (
           uploadButtons[type] = {
+            file: file,
             isLoading: false,
             isLoaded: true,
             variant: 'success'
@@ -100,6 +101,7 @@ class Content extends React.Component {
     ).catch(
       error => (
           uploadButtons[type] = {
+            file: file,
             isLoading: false,
             isLoaded: false,
             variant: 'danger'
@@ -114,10 +116,11 @@ class Content extends React.Component {
   render(){
     return (
       <Row noGutters>          
-        <Sidebar buttonOnClick={this.sidebarClick} />    
+        <Sidebar 
+          buttonOnClick={this.sidebarClick}
+          handleSelectedFile={this.handleSelectedFile} />    
         <MainPanel 
-          sidebar={this.state.sidebar}
-          handleSelectedFile={this.handleSelectedFile}
+          sidebar={this.state.sidebar}          
           uploadButtons={this.state.uploadButtons}
           handeClickUploadButton={this.handeClickUploadButton.bind(this)} />
       </Row>

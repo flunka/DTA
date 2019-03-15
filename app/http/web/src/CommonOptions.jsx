@@ -7,24 +7,24 @@ import UploadingButton from './UploadingButton.jsx';
 function CommonOptions(props) {
   return (
     <Container className="p-0 m-0 w-100 mw-100">
-      <Row noGutters>
-        <Button variant="info" size="lg" type="submit" block>Run</Button>
-      </Row>
       <Row noGutters>{/*File Uploads*/}
-        <Col>
-          <Form.Group controlId="formUploadPlannedDose">
-            <Form.Label className='ml-1'>Planned dose file</Form.Label>
-            <Form.Control type="file" onChange={(event) => props.handleSelectedFile(event, 0)} />
-          </Form.Group>   
-            <UploadingButton options={props.uploadButtons[0]}
-              type={0} 
-              handeClickUploadButton={props.handeClickUploadButton}/> 
+        <Col sm="6">
+          <Row noGutters className="ml-1">Planned dose file</Row>
+          <div className="file-name ml-1">
+            {props.uploadButtons[0].file && props.uploadButtons[0].file.name}
+            {!props.uploadButtons[0].file && "No file selected."}
+          </div>
+          <UploadingButton options={props.uploadButtons[0]}
+            type={0} 
+            handeClickUploadButton={props.handeClickUploadButton}/> 
+          
         </Col>
-        <Col>
-          <Form.Group controlId="formUploadAppliedDose">
-            <Form.Label className='ml-1'>Applied dose file</Form.Label>
-            <Form.Control type="file" onChange={(event) => props.handleSelectedFile(event, 1)} />
-          </Form.Group>
+        <Col sm="6">
+          <Row noGutters className="ml-1">Applied dose file</Row>
+          <div className="file-name ml-1">
+            {props.uploadButtons[1].file && props.uploadButtons[1].file.name}
+            {!props.uploadButtons[1].file && "No file selected."}
+          </div>
           <UploadingButton options={props.uploadButtons[1]}
             type={1}
             handeClickUploadButton={props.handeClickUploadButton}/>

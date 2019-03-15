@@ -42,8 +42,25 @@ class Sidebar extends React.Component {
         </Alert>
         <Collapse in={this.state.navItems[0].isOpen}>
           <div id="actions">
+            <Button variant="secondary" type="submit" block>Run</Button>
+            <label className="m-0 w-100">
+              <input type="file" 
+                onChange={(event) => this.props.handleSelectedFile(event, 0)} 
+                />
+              <Button className="m-0" as={Col} variant="secondary" block>
+              Browse planned dose file
+              </Button>
+            </label> 
             <ShowButton text="Show Plan"
               type='planned' />
+            <label className="m-0 w-100">
+              <input type="file" 
+                onChange={(event) => this.props.handleSelectedFile(event, 1)} 
+                />
+              <Button className="m-0" as={Col} variant="secondary" block>
+              Browse applied dose file
+              </Button>
+            </label> 
             <ShowButton text="Show Realization"
               type='applied' />
             <Button className="m-0" variant="secondary" block>Adjust doses
