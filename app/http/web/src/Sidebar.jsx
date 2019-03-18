@@ -51,7 +51,7 @@ class Sidebar extends React.Component {
               Browse planned dose file
               </Button>
             </label> 
-            <ShowButton text="Show Plan"
+            <ShowButton text="Plan"
               type='planned' />
             <label className="m-0 w-100">
               <input type="file" 
@@ -61,7 +61,7 @@ class Sidebar extends React.Component {
               Browse applied dose file
               </Button>
             </label> 
-            <ShowButton text="Show Realization"
+            <ShowButton text="Realization"
               type='applied' />
             <Button className="m-0" variant="secondary" block>Adjust doses
             </Button>
