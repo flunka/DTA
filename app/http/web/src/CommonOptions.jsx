@@ -15,8 +15,7 @@ function CommonOptions(props) {
             {!props.uploadButtons[0].file && "No file selected."}
           </div>
           <UploadingButton options={props.uploadButtons[0]}
-            type={0} 
-            handeClickUploadButton={props.handeClickUploadButton}/> 
+            type={0} /> 
           
         </Col>
         <Col sm="6">
@@ -26,8 +25,7 @@ function CommonOptions(props) {
             {!props.uploadButtons[1].file && "No file selected."}
           </div>
           <UploadingButton options={props.uploadButtons[1]}
-            type={1}
-            handeClickUploadButton={props.handeClickUploadButton}/>
+            type={1}/>
         </Col>
       </Row>
       <Row noGutters >{/*Methods checkboxes*/}

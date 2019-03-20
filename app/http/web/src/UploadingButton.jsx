@@ -13,12 +13,10 @@ class UploadingButton extends React.Component{
     return(
       <Button 
         variant={this.props.options.variant}
-        disabled={this.props.options.isLoading || this.props.options.isLoaded || !this.props.options.file}
-        onClick={!(this.props.options.isLoading || this.props.options.isLoaded) 
-          ?(e) => this.props.handeClickUploadButton(this.props.type) : null}
+        disabled={true}
         block
       >
-      {this.props.options.isLoading == this.props.options.isLoaded && 'Upload'}
+      {this.props.options.isLoading == this.props.options.isLoaded && 'Not uploaded'}
       {this.props.options.isLoading && 'Uploading...'}
       {this.props.options.isLoaded && 'Uploaded!'}
       </Button>

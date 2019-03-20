@@ -34,23 +34,31 @@ class ShowButon extends React.Component {
     );
   }
   render(){
+    const resizing = { top:false, right:true, bottom:false, left:true, topRight:false, bottomRight:false, bottomLeft:false, topLeft:false }
     const popover = (
-        <Rnd className="popover position-absolute" 
+        <Rnd className="position-absolute" 
           default={{
             x: 0,
             y: 0,
+            width: 650,
           }}
           minWidth={250}
-          maxWidth={650}
+          maxWidth={1200}
           lockAspectRatio={true}
+          enableResizing={resizing}
         >
-          <Alert variant='dark' className="m-0 p-0 h-auto text-center">{this.props.text} image</Alert>
+          <Alert variant="secondary" className="m-0 p-0 text-center">{this.props.text} image</Alert>
           <img className="image" src={this.state.url} />
         </Rnd>        
     );
     return(
       <div>
-        <Button block variant="secondary" className="m-0" onClick={() => this.get_image(this.props.type)}>{this.state.show ? "Hide " : "Show "}{this.props.text}</Button>
+        <Button block variant="secondary" disabled={this.props.disable} className="m-0" onClick={() => {
+          this.state.show ? this.setState({show: false}) : 
+          this.get_image(this.props.type)}
+          }
+        >
+          {this.state.show ? "Hide " : "Show "}{this.props.text}</Button>
         <Overlay
           target={document.getElementById('root')}
           show={this.state.show}

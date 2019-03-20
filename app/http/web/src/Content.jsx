@@ -30,41 +30,14 @@ class Content extends React.Component {
 
   handleSelectedFile(event, type){
     const uploadButtons = this.state.uploadButtons.slice();
+    const file = event.target.files[0];
     uploadButtons[type] = {
-      file: event.target.files[0],
-      isLoading: false,
-      isLoaded: false,
-      variant: 'info'
-    }
-    this.setState({
-      uploadButtons: uploadButtons
-    });
-  }
-
-  sidebarClick(i, type){
-    /* 
-    type == 0 - dose change
-    type == 1 - distance change
-    */
-    const sidebar = this.state.sidebar.slice();
-    sidebar[type] = {
-      methodToRender: i
-    }
-    this.setState({
-      sidebar: sidebar
-    }) 
-  }
-
-  handeClickUploadButton(type) {
-    const uploadButtons = this.state.uploadButtons.slice();
-    uploadButtons[type] = {
-      file: uploadButtons[type].file,
+      file: file,
       isLoading: true,
       isLoaded:false,
       variant: 'info'
     }
     this.setState({uploadButtons: uploadButtons});
-    const file = uploadButtons[type].file;
     
     const form = new FormData();
     if (type == 0) {
@@ -113,16 +86,32 @@ class Content extends React.Component {
     );
   }
 
+  sidebarClick(i, type){
+    /* 
+    type == 0 - dose change
+    type == 1 - distance change
+    */
+    const sidebar = this.state.sidebar.slice();
+    sidebar[type] = {
+      methodToRender: i
+    }
+    this.setState({
+      sidebar: sidebar
+    }) 
+  }
+
+ 
+
   render(){
     return (
       <Row noGutters>          
         <Sidebar 
           buttonOnClick={this.sidebarClick}
-          handleSelectedFile={this.handleSelectedFile} />    
+          handleSelectedFile={this.handleSelectedFile}
+          uploadButtons={this.state.uploadButtons} />    
         <MainPanel 
           sidebar={this.state.sidebar}          
-          uploadButtons={this.state.uploadButtons}
-          handeClickUploadButton={this.handeClickUploadButton.bind(this)} />
+          uploadButtons={this.state.uploadButtons} />
       </Row>
     )   
   }

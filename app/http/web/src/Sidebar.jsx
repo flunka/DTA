@@ -8,7 +8,8 @@ class Sidebar extends React.Component {
     this.state = {
       navItems: Array(3).fill({
         isOpen: false
-      })
+      }),
+      adjusted: false
     }
   }
 
@@ -27,6 +28,27 @@ class Sidebar extends React.Component {
       navItems: navItems
     })
     
+  }
+
+  adjustOnClick(){
+    fetch(process.env.API_URL +'/AdjustDoses', { // Your POST endpoint
+      method: 'GET',
+      credentials: "include",
+    }).then(
+      response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Something went wrong');
+        }
+      }
+    ).then(
+      success => this.setState({
+        adjusted:true
+      })
+    ).catch(
+      error => console.log("Error!")// Handle the error response object
+    );
   }
 
   render(){
@@ -52,7 +74,8 @@ class Sidebar extends React.Component {
               </Button>
             </label> 
             <ShowButton text="Plan"
-              type='planned' />
+              type='planned'
+              disable={!this.props.uploadButtons[0].isLoaded} />
             <label className="m-0 w-100">
               <input type="file" 
                 onChange={(event) => this.props.handleSelectedFile(event, 1)} 
@@ -62,9 +85,18 @@ class Sidebar extends React.Component {
               </Button>
             </label> 
             <ShowButton text="Realization"
-              type='applied' />
-            <Button className="m-0" variant="secondary" block>Adjust doses
+              type='applied'
+              disable={!this.props.uploadButtons[1].isLoaded} />
+            <Button className="m-0" variant="secondary" block
+              onClick={() => this.adjustOnClick()}
+              disabled={
+                !this.props.uploadButtons[0].isLoaded || 
+                !this.props.uploadButtons[1].isLoaded}
+            >Adjust doses
             </Button>
+            <ShowButton text="Adjusted"
+              type='adjusted'
+              disable={!this.state.adjusted} />
             <Button className="m-0" variant="secondary" block>Align doses
             </Button>
           </div>
