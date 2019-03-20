@@ -34,6 +34,20 @@ class DTA(Resource):
     return {'Success': 'Welcome'}, {'Access-Control-Allow-Origin': '*'}
 
 
+def generate_session_id():
+  return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(15))
+
+
+def create_path(folder):
+  if 'id' not in session:
+    session['id'] = generate_session_id()
+  folder = '/'.join((session['id'], folder, ""))
+  path = os.path.join(app.config['UPLOAD_FOLDER'], folder)
+  if not os.path.exists(path):
+    os.makedirs(path)
+  return path
+
+
 class GetImage(Resource):
   """docstring for GetImage"""
 
@@ -42,6 +56,7 @@ class GetImage(Resource):
     self.parser = reqparse.RequestParser()
     self.parser.add_argument('planned', type=bool)
     self.parser.add_argument('applied', type=bool)
+    self.parser.add_argument('adjusted', type=bool)
 
   def get(self):
     args = self.parser.parse_args()
@@ -49,6 +64,8 @@ class GetImage(Resource):
       file = '/planned/plan.jpg'
     elif args['applied']:
       file = '/applied/applied.jpg'
+    elif args['adjusted']:
+      file = '/result/adjusted.jpg'
     else:
       return abort(403, error_message='No type of image')
     if 'id' in session:
@@ -67,16 +84,11 @@ class UploadFile(Resource):
     self.parser.add_argument('planned_dose_file', type=FileStorage, location='files')
     self.parser.add_argument('applied_dose_file', type=FileStorage, location='files')
 
-  def generate_session_id(self):
-    return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(15))
-
   def allowed_file(self, filename):
     return '.' in filename \
         and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
   def post(self):
-    if 'id' not in session:
-      session['id'] = self.generate_session_id()
     args = self.parser.parse_args()
     uploaded_file = None
     planned = True
@@ -89,11 +101,8 @@ class UploadFile(Resource):
       abort(403, error_message='File not selected')
     if uploaded_file and self.allowed_file(uploaded_file.filename):
       filename = secure_filename(uploaded_file.filename)
-      folder = 'planned/' if planned else 'applied/'
-      folder = '/'.join((session['id'], folder))
-      upload_path = os.path.join(app.config['UPLOAD_FOLDER'], folder)
-      if not os.path.exists(upload_path):
-        os.makedirs(upload_path)
+      folder = 'planned' if planned else 'applied'
+      upload_path = create_path(folder)
       uploaded_file.save("".join((upload_path, filename)))
       if planned:
         make_images.make_planned_dose_image(file_name=filename, path=upload_path)
@@ -103,24 +112,35 @@ class UploadFile(Resource):
     return abort(403, error_message='File formant not allowed')
 
 
-class GlobalMethod(Resource):
-  """docstring for GlobalMethod"""
+class AdjustDoses(Resource):
+  """docstring for AdjustDoses"""
 
   def __init__(self):
     super().__init__()
     self.parser = reqparse.RequestParser()
-    self.parser.add_argument('test', type=bool, required=True)
 
-  def post(self):
+  def create_dose(self, path):
+    dose = make_images.Dose(
+        x="".join((path, 'dataX.npy')),
+        y="".join((path, 'dataY.npy')),
+        doses="".join((path, 'data.npy')),
+        file=True)
+    return dose
+
+  def get(self):
     args = self.parser.parse_args()
-    if args['test']:
-      return {'true': ''}
-    else:
-      return {'false': ''}
+    planned_folder = 'planned/'
+    applied_folder = 'applied'
+    planned_path = create_path("planned")
+    applied_path = create_path("applied")
+    planned_dose = self.create_dose(planned_path)
+    applied_dose = self.create_dose(applied_path)
+    result_path = create_path("result")
+    make_images.adjust_doses(planned_dose, applied_dose, result_path)
 
 
 api.add_resource(DTA, '/', '/DTA')
-api.add_resource(GlobalMethod, '/GlobalMethod')
+api.add_resource(AdjustDoses, '/AdjustDoses')
 api.add_resource(UploadFile, '/Upload')
 api.add_resource(GetImage, '/GetImage')
 
