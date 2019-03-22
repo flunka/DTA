@@ -48,24 +48,27 @@ def create_path(folder):
   return path
 
 
+def create_dose(path):
+  dose = make_images.Dose(
+      x="".join((path, 'dataX.npy')),
+      y="".join((path, 'dataY.npy')),
+      doses="".join((path, 'data.npy')),
+      file=True)
+  return dose
+
+
 class GetImage(Resource):
   """docstring for GetImage"""
 
   def __init__(self):
     super().__init__()
     self.parser = reqparse.RequestParser()
-    self.parser.add_argument('planned', type=bool)
-    self.parser.add_argument('applied', type=bool)
-    self.parser.add_argument('adjusted', type=bool)
+    self.parser.add_argument('type', type=str)
 
   def get(self):
     args = self.parser.parse_args()
-    if args['planned']:
-      file = '/planned/plan.jpg'
-    elif args['applied']:
-      file = '/applied/applied.jpg'
-    elif args['adjusted']:
-      file = '/result/adjusted.jpg'
+    if args['type']:
+      file = '/{0}/{0}.jpg'.format(args['type'])
     else:
       return abort(403, error_message='No type of image')
     if 'id' in session:
@@ -109,7 +112,7 @@ class UploadFile(Resource):
       else:
         make_images.make_applied_dose_image(file_name=filename, path=upload_path)
       return {'Success': 'Planned dose file has been uploaded successfully'}
-    return abort(403, error_message='File formant not allowed')
+    return abort(403, error_message='File format not allowed')
 
 
 class AdjustDoses(Resource):
@@ -119,28 +122,36 @@ class AdjustDoses(Resource):
     super().__init__()
     self.parser = reqparse.RequestParser()
 
-  def create_dose(self, path):
-    dose = make_images.Dose(
-        x="".join((path, 'dataX.npy')),
-        y="".join((path, 'dataY.npy')),
-        doses="".join((path, 'data.npy')),
-        file=True)
-    return dose
+  def get(self):
+    args = self.parser.parse_args()
+    planned_path = create_path('planned')
+    applied_path = create_path('applied')
+    adjusted_path = create_path('adjusted')
+    planned_dose = create_dose(planned_path)
+    applied_dose = create_dose(applied_path)
+    make_images.adjust_doses(planned_dose, applied_dose, adjusted_path)
+
+
+class AlignDoses(Resource):
+  """docstring for AlignDoses"""
+
+  def __init__(self):
+    super().__init__()
+    self.parser = reqparse.RequestParser()
 
   def get(self):
     args = self.parser.parse_args()
-    planned_folder = 'planned/'
-    applied_folder = 'applied'
-    planned_path = create_path("planned")
-    applied_path = create_path("applied")
-    planned_dose = self.create_dose(planned_path)
-    applied_dose = self.create_dose(applied_path)
-    result_path = create_path("result")
-    make_images.adjust_doses(planned_dose, applied_dose, result_path)
+    applied_path = create_path('applied')
+    adjusted_path = create_path('adjusted')
+    aligned_path = create_path('aligned')
+    applied_dose = create_dose(applied_path)
+    adjusted_dose = create_dose(adjusted_path)
+    make_images.align_doses(adjusted_dose, applied_dose, aligned_path)
 
 
 api.add_resource(DTA, '/', '/DTA')
 api.add_resource(AdjustDoses, '/AdjustDoses')
+api.add_resource(AlignDoses, '/AlignDoses')
 api.add_resource(UploadFile, '/Upload')
 api.add_resource(GetImage, '/GetImage')
 

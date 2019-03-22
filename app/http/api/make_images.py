@@ -76,7 +76,7 @@ def make_planned_dose_image(file_name, path):
   # Save to file
   save_data(path, dataX, dataY, doses)
   # Create image
-  make_image(doses, "".join((path, "plan.jpg")), 2)
+  make_image(doses, "".join((path, "planned.jpg")), 2)
 
 
 def make_image(doses, path, scale=1):
@@ -130,3 +130,48 @@ def adjust_doses(planned_dose, applied_dose, path):
             adjusted_planned_dose.y,
             adjusted_planned_dose.doses)
   make_image(adjusted_planned_dose.doses, "".join((path, "adjusted.jpg")), 10)
+
+
+def align_doses(adjusted_planned_dose, applied_dose, path):
+
+  # Find size of image1
+  width, height = np.shape(applied_dose.doses)
+
+  # Define the motion model
+  warp_mode = cv.MOTION_HOMOGRAPHY
+
+  # Define 2x3 or 3x3 matrices and initialize the matrix to identity
+  if warp_mode == cv.MOTION_HOMOGRAPHY:
+    warp_matrix = np.eye(3, 3, dtype=np.float32)
+  else:
+    warp_matrix = np.eye(2, 3, dtype=np.float32)
+
+  # Specify the number of iterations.
+  number_of_iterations = 5000
+
+  # Specify the threshold of the increment
+  # in the correlation coefficient between two iterations
+  termination_eps = 1e-10
+
+  # Define termination criteria
+  criteria = (cv.TERM_CRITERIA_EPS | cv.TERM_CRITERIA_COUNT, number_of_iterations, termination_eps)
+  # Convert to float32
+  applied_dose.doses = np.float32(applied_dose.doses)
+  adjusted_planned_dose.doses = np.float32(adjusted_planned_dose.doses)
+  # Run the ECC algorithm. The results are stored in warp_matrix.
+  (cc, warp_matrix) = cv.findTransformECC(applied_dose.doses,
+                                          adjusted_planned_dose.doses, warp_matrix,
+                                          warp_mode, criteria)
+
+  if warp_mode == cv.MOTION_HOMOGRAPHY:
+    # Use warpPerspective for Homography
+    aligned_doses = cv.warpPerspective(adjusted_planned_dose.doses,
+                                       warp_matrix, (height, width),
+                                       flags=cv.INTER_LINEAR + cv.WARP_INVERSE_MAP)
+  else:
+    # Use warpAffine for Translation, Euclidean and Affine
+    aligned_doses = cv.warpAffine(adjusted_planned_dose.doses,
+                                  warp_matrix, (height, width),
+                                  flags=cv.INTER_LINEAR + cv.WARP_INVERSE_MAP)
+
+  make_image(aligned_doses, "".join((path, "aligned.jpg")), 10)
