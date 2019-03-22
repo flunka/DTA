@@ -9,7 +9,8 @@ class Sidebar extends React.Component {
       navItems: Array(3).fill({
         isOpen: false
       }),
-      adjusted: false
+      adjusted: false,
+      aligned: false
     }
   }
 
@@ -45,6 +46,28 @@ class Sidebar extends React.Component {
     ).then(
       success => this.setState({
         adjusted:true
+      })
+    ).catch(
+      error => console.log("Error!")// Handle the error response object
+    );
+  }
+
+  alignOnClick(){
+    fetch(process.env.API_URL +'/AlignDoses', { // Your POST endpoint
+      method: 'GET',
+      credentials: "include",
+    }).then(
+      response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Something went wrong');
+        }
+      }
+    ).then(
+      success => this.setState({
+        adjusted:true,
+        aligned:true
       })
     ).catch(
       error => console.log("Error!")// Handle the error response object
@@ -97,8 +120,14 @@ class Sidebar extends React.Component {
             <ShowButton text="Adjusted"
               type='adjusted'
               disable={!this.state.adjusted} />
-            <Button className="m-0" variant="secondary" block>Align doses
+            <Button className="m-0" variant="secondary" block
+              onClick={() => this.alignOnClick()}
+              disabled={!this.state.adjusted}
+            >Align doses
             </Button>
+            <ShowButton text="Aligned"
+              type='aligned'
+              disable={!this.state.aligned} />
           </div>
         </Collapse>
         <Alert 

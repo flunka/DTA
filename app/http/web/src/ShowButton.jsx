@@ -15,7 +15,7 @@ class ShowButon extends React.Component {
   }
 
   get_image(type){
-    fetch(process.env.API_URL + '/GetImage?' + type + '=true', { // Your POST endpoint
+    fetch(process.env.API_URL + '/GetImage?type=' + type , { // Your POST endpoint
       method: 'GET',
       credentials: "include"
     }).then(
@@ -47,7 +47,9 @@ class ShowButon extends React.Component {
           lockAspectRatio={true}
           enableResizing={resizing}
         >
-          <Alert variant="secondary" className="m-0 p-0 text-center">{this.props.text} image</Alert>
+          <Alert variant="secondary" className="m-0 p-0 text-center"
+            onDoubleClick={() => {this.setState({show:false})}}
+          >{this.props.text} image</Alert>
           <img className="image" src={this.state.url} />
         </Rnd>        
     );
