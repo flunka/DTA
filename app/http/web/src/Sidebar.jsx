@@ -10,7 +10,9 @@ class Sidebar extends React.Component {
         isOpen: false
       }),
       adjusted: false,
-      aligned: false
+      aligned: false,
+      adjust_text: 'Adjust doses',
+      align_text: 'Align doses'
     }
   }
 
@@ -32,6 +34,9 @@ class Sidebar extends React.Component {
   }
 
   adjustOnClick(){
+    this.setState({
+        adjust_text: 'Adjusting doses...'
+      });
     fetch(process.env.API_URL +'/AdjustDoses', { // Your POST endpoint
       method: 'GET',
       credentials: "include",
@@ -45,7 +50,8 @@ class Sidebar extends React.Component {
       }
     ).then(
       success => this.setState({
-        adjusted:true
+        adjusted:true,
+        adjust_text: 'Adjusted!'
       })
     ).catch(
       error => console.log("Error!")// Handle the error response object
@@ -53,6 +59,9 @@ class Sidebar extends React.Component {
   }
 
   alignOnClick(){
+    this.setState({
+        align_text: 'Aligning doses...',
+      });
     fetch(process.env.API_URL +'/AlignDoses', { // Your POST endpoint
       method: 'GET',
       credentials: "include",
@@ -66,8 +75,8 @@ class Sidebar extends React.Component {
       }
     ).then(
       success => this.setState({
-        adjusted:true,
-        aligned:true
+        aligned:true,
+        align_text: 'Aligned!'
       })
     ).catch(
       error => console.log("Error!")// Handle the error response object
@@ -115,7 +124,7 @@ class Sidebar extends React.Component {
               disabled={
                 !this.props.uploadButtons[0].isLoaded || 
                 !this.props.uploadButtons[1].isLoaded}
-            >Adjust doses
+            >{this.state.adjust_text}
             </Button>
             <ShowButton text="Adjusted"
               type='adjusted'
@@ -123,7 +132,7 @@ class Sidebar extends React.Component {
             <Button className="m-0" variant="secondary" block
               onClick={() => this.alignOnClick()}
               disabled={!this.state.adjusted}
-            >Align doses
+            >{this.state.align_text}
             </Button>
             <ShowButton text="Aligned"
               type='aligned'
