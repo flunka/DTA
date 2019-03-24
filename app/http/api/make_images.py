@@ -138,7 +138,7 @@ def align_doses(adjusted_planned_dose, applied_dose, path):
   width, height = np.shape(applied_dose.doses)
 
   # Define the motion model
-  warp_mode = cv.MOTION_HOMOGRAPHY
+  warp_mode = cv.MOTION_EUCLIDEAN
 
   # Define 2x3 or 3x3 matrices and initialize the matrix to identity
   if warp_mode == cv.MOTION_HOMOGRAPHY:
