@@ -8,7 +8,9 @@ class ShowButon extends React.Component {
     super(props);
     this.state = {
       url: "",
-      show: false
+      show: false,
+      x: 0,
+      y: 0
     };
 
     this.get_image = this.get_image.bind(this);
@@ -37,15 +39,23 @@ class ShowButon extends React.Component {
     const resizing = { top:false, right:true, bottom:false, left:true, topRight:false, bottomRight:false, bottomLeft:false, topLeft:false }
     const popover = (
         <Rnd className="position-absolute" 
+          style={{zIndex:this.props.zIndex}}
           default={{
-            x: 0,
-            y: 0,
+            x: this.state.x,
+            y: this.state.y,
             width: 650,
           }}
           minWidth={250}
           maxWidth={1200}
           lockAspectRatio={true}
           enableResizing={resizing}
+          onDragStop={(e, data) => {
+            this.setState({
+              x: data.x,
+              y: data.y
+            })
+          }}
+          onClick={this.props.imageOnClick}
         >
           <Alert variant="secondary" className="m-0 p-0 text-center"
             onDoubleClick={() => {this.setState({show:false})}}
@@ -62,7 +72,7 @@ class ShowButon extends React.Component {
         >
           {this.state.show ? "Hide " : "Show "}{this.props.text}</Button>
         <Overlay
-          target={document.getElementById('root')}
+          container={document.getElementById('root')}
           show={this.state.show}
         >
           {() => (popover)}

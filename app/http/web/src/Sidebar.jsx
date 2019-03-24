@@ -12,7 +12,10 @@ class Sidebar extends React.Component {
       adjusted: false,
       aligned: false,
       adjust_text: 'Adjust doses',
-      align_text: 'Align doses'
+      align_text: 'Align doses',
+      images: Array(4).fill({
+        z: 0
+      })
     }
   }
 
@@ -31,6 +34,19 @@ class Sidebar extends React.Component {
       navItems: navItems
     })
     
+  }
+
+  imageOnClick(i){
+    var images = Array(4).fill({
+      z: 0
+    });
+    images[i] = {
+      z: 9
+    };
+    this.setState({
+      images: images
+    })
+
   }
 
   adjustOnClick(){
@@ -106,6 +122,8 @@ class Sidebar extends React.Component {
               </Button>
             </label> 
             <ShowButton text="Plan"
+              zIndex={this.state.images[0].z}
+              imageOnClick={()=> this.imageOnClick(0)}
               type='planned'
               disable={!this.props.uploadButtons[0].isLoaded} />
             <label className="m-0 w-100">
@@ -117,6 +135,8 @@ class Sidebar extends React.Component {
               </Button>
             </label> 
             <ShowButton text="Realization"
+              zIndex={this.state.images[1].z}
+              imageOnClick={()=> this.imageOnClick(1)}
               type='applied'
               disable={!this.props.uploadButtons[1].isLoaded} />
             <Button className="m-0" variant="secondary" block
@@ -127,6 +147,8 @@ class Sidebar extends React.Component {
             >{this.state.adjust_text}
             </Button>
             <ShowButton text="Adjusted"
+              ndex={this.state.images[2].z}
+              imageOnClick={()=> this.imageOnClick(2)}
               type='adjusted'
               disable={!this.state.adjusted} />
             <Button className="m-0" variant="secondary" block
@@ -135,6 +157,8 @@ class Sidebar extends React.Component {
             >{this.state.align_text}
             </Button>
             <ShowButton text="Aligned"
+              zIndex={this.state.images[3].z}
+              imageOnClick={()=> this.imageOnClick(3)}
               type='aligned'
               disable={!this.state.aligned} />
           </div>
