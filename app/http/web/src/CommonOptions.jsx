@@ -30,7 +30,7 @@ function CommonOptions(props) {
       </Row>
       <Row noGutters >{/*Methods checkboxes*/}
         <div key={'inline-checkbox'} className="mb-3 mx-auto">
-          <Form.Check inline label="Global-index method" type='checkbox' id={'inline-checkbox-1'} />
+          <Form.Check inline label="Gamma-index method" type='checkbox' id={'inline-checkbox-1'} />
           <Form.Check inline label="Van Dyk method" type='checkbox' id={'inline-checkbox-2'} />
           <Form.Check inline label="Dose difference method" type='checkbox' id={'inline-checkbox-3'} />
         </div>
