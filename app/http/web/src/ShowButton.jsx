@@ -2,6 +2,8 @@ import React from 'react';
 
 import {Button, Popover, Overlay, Image, Alert} from 'react-bootstrap';
 import {Rnd} from 'react-rnd';
+import download from './download.png'
+
 
 class ShowButon extends React.Component {
   constructor(props){
@@ -59,7 +61,14 @@ class ShowButon extends React.Component {
         >
           <Alert variant="secondary" className="m-0 p-0 text-center"
             onDoubleClick={() => {this.setState({show:false})}}
-          >{this.props.text} image</Alert>
+          >
+            {this.props.text} image 
+            <a href={this.state.url} download>
+              <img src={download} alt='download' 
+                width="30" height="30">
+              </img>
+            </a>
+          </Alert>
           <img className="image" src={this.state.url} />
         </Rnd>        
     );
