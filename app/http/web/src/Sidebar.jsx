@@ -36,12 +36,15 @@ class Sidebar extends React.Component {
     
   }
 
-  imageOnClick(i){
-    var images = Array(4).fill({
-      z: 0
-    });
-    images[i] = {
-      z: 9
+  imageOnClick(num){
+    var images = this.state.images.slice();
+    for (var i = 0, len = images.length; i < len; i++) {
+      if (images[i].z > 0) {
+        images[i].z = images[i].z- 1;  
+      }      
+    }
+    images[num] = {
+      z: 4
     };
     this.setState({
       images: images
@@ -147,7 +150,7 @@ class Sidebar extends React.Component {
             >{this.state.adjust_text}
             </Button>
             <ShowButton text="Adjusted"
-              ndex={this.state.images[2].z}
+              zIndex={this.state.images[2].z}
               imageOnClick={()=> this.imageOnClick(2)}
               type='adjusted'
               disable={!this.state.adjusted} />

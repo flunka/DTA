@@ -38,7 +38,7 @@ class ShowButon extends React.Component {
   render(){
     const resizing = { top:false, right:true, bottom:false, left:true, topRight:false, bottomRight:false, bottomLeft:false, topLeft:false }
     const popover = (
-        <Rnd className="position-absolute" 
+        <Rnd 
           style={{zIndex:this.props.zIndex}}
           default={{
             x: this.state.x,
