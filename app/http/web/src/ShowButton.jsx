@@ -63,7 +63,7 @@ class ShowButon extends React.Component {
             onDoubleClick={() => {this.setState({show:false})}}
           >
             {this.props.text} image 
-            <a href={this.state.url} download>
+            <a href={this.state.url.replace('.jpg', '.nrrd')} download>
               <img src={download} alt='download' 
                 width="30" height="30">
               </img>
