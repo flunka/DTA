@@ -1,5 +1,6 @@
 import numpy as np
 import cv2 as cv
+import nrrd
 fname = "applied.txt"
 
 
@@ -53,7 +54,7 @@ def make_applied_dose_image(file_name, path):
   # # save to file
   save_data(path, dataX, dataY, doses)
   # Create image
-  make_image(doses, "".join((path, "applied.jpg")), 10)
+  make_image(doses, "".join((path, "applied")), 10)
 
 
 def make_planned_dose_image(file_name, path):
@@ -76,17 +77,18 @@ def make_planned_dose_image(file_name, path):
   # Save to file
   save_data(path, dataX, dataY, doses)
   # Create image
-  make_image(doses, "".join((path, "planned.jpg")), 2)
+  make_image(doses, "".join((path, "planned")), 2)
 
 
 def make_image(doses, path, scale=1):
   colunms, rows = np.shape(doses)
   image = np.zeros([colunms, rows])
   image[:, :] = doses
+  nrrd.write(".".join((path, 'nrrd')), image)
   if scale != 1:
     image = cv.resize(image, None, fx=scale, fy=scale, interpolation=cv.INTER_CUBIC)
   normalized_image = cv.normalize(image, None, 255, 0, cv.NORM_MINMAX, cv.CV_8UC1)
-  cv.imwrite(path, normalized_image)
+  cv.imwrite(".".join((path, 'jpg')), normalized_image)
 
 
 def save_data(path, dataX, dataY, doses):
@@ -129,7 +131,7 @@ def adjust_doses(planned_dose, applied_dose, path):
             adjusted_planned_dose.x,
             adjusted_planned_dose.y,
             adjusted_planned_dose.doses)
-  make_image(adjusted_planned_dose.doses, "".join((path, "adjusted.jpg")), 10)
+  make_image(adjusted_planned_dose.doses, "".join((path, "adjusted")), 10)
 
 
 def align_doses(adjusted_planned_dose, applied_dose, path):
@@ -174,4 +176,4 @@ def align_doses(adjusted_planned_dose, applied_dose, path):
                                   warp_matrix, (height, width),
                                   flags=cv.INTER_LINEAR + cv.WARP_INVERSE_MAP)
 
-  make_image(aligned_doses, "".join((path, "aligned.jpg")), 10)
+  make_image(aligned_doses, "".join((path, "aligned")), 10)
