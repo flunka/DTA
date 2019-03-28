@@ -43,7 +43,7 @@ def make_applied_dose_image(file_name, path):
           first_line_omitted = True
       elif col:
         line = line.split('\t')
-        dataX = [float(x) for x in line[2:-1]]
+        dataX = [float(x) for x in line[2:]]
         col = False
         dose = False
         break
