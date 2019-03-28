@@ -47,14 +47,19 @@ def make_applied_dose_image(file_name, path):
         col = False
         dose = False
         break
+
   # Convert to numpy array
   doses = np.array(data)
   dataX = np.array(dataX)
   dataY = np.array(dataY)
+  # Resize dose to desired size
+  scale = 5
+  doses = resize_doses(doses, scale)[:(1 - scale), :(1 - scale)]
   # # save to file
   save_data(path, dataX, dataY, doses)
   # Create image
-  make_image(doses, "".join((path, "applied")), 10)
+  make_image(doses, "".join((path, "applied")), 2)
+  make_nrrd(doses, "".join((path, "applied")))
 
 
 def make_planned_dose_image(file_name, path):
@@ -66,10 +71,10 @@ def make_planned_dose_image(file_name, path):
     for idx, line in enumerate(f):
       line = line.split()
       if(idx == 5):
-        dataX = [float(x) / 10 for x in line[1:-1]]
+        dataX = [float(x) / 10 for x in line[1:]]
       elif(idx > 5):
         dataY.append(float(line[0]) / 10)
-        data.append([float(x) for x in line[1:-1]])
+        data.append([float(x) for x in line[1:]])
   # Conver to numpy array
   dataX = np.array(dataX)
   dataY = np.array(dataY)
@@ -78,15 +83,16 @@ def make_planned_dose_image(file_name, path):
   save_data(path, dataX, dataY, doses)
   # Create image
   make_image(doses, "".join((path, "planned")), 2)
+  make_nrrd(doses, "".join((path, "planned")))
+
+
+def make_nrrd(doses, path, scale=1):
+  image = resize_doses(doses, scale)
+  nrrd.write(".".join((path, 'nrrd')), np.transpose(image))
 
 
 def make_image(doses, path, scale=1):
-  colunms, rows = np.shape(doses)
-  image = np.zeros([colunms, rows])
-  image[:, :] = doses
-  nrrd.write(".".join((path, 'nrrd')), image)
-  if scale != 1:
-    image = cv.resize(image, None, fx=scale, fy=scale, interpolation=cv.INTER_CUBIC)
+  image = resize_doses(doses, scale)
   normalized_image = cv.normalize(image, None, 255, 0, cv.NORM_MINMAX, cv.CV_8UC1)
   cv.imwrite(".".join((path, 'jpg')), normalized_image)
 
@@ -118,20 +124,21 @@ def get_first_and_last_matching_index(planned, applied):
 
 
 def adjust_doses(planned_dose, applied_dose, path):
-  step = 5
+  step = 1
   firstX, lastX = get_first_and_last_matching_index(planned_dose.x, applied_dose.x)
   firstY, lastY = get_first_and_last_matching_index(planned_dose.y, applied_dose.y)
   adjusted_planned_dose = Dose(
       x=planned_dose.x[firstX:lastX + step + 1:step],
       y=planned_dose.y[firstY:lastY + 1:step],
-      doses=planned_dose.doses[firstY:lastY + 1:step, firstX:lastX + step + 1:step]
+      doses=planned_dose.doses[firstY:lastY + 1:step, firstX:lastX + 5 + 1:step]
   )
 
   save_data(path,
             adjusted_planned_dose.x,
             adjusted_planned_dose.y,
             adjusted_planned_dose.doses)
-  make_image(adjusted_planned_dose.doses, "".join((path, "adjusted")), 10)
+  make_image(adjusted_planned_dose.doses, "".join((path, "adjusted")), 2)
+  make_nrrd(adjusted_planned_dose.doses, "".join((path, "adjusted")))
 
 
 def align_doses(adjusted_planned_dose, applied_dose, path):
@@ -176,4 +183,14 @@ def align_doses(adjusted_planned_dose, applied_dose, path):
                                   warp_matrix, (height, width),
                                   flags=cv.INTER_LINEAR + cv.WARP_INVERSE_MAP)
 
-  make_image(aligned_doses, "".join((path, "aligned")), 10)
+  make_image(aligned_doses, "".join((path, "aligned")), 2)
+  make_nrrd(aligned_doses, "".join((path, "aligned")))
+
+
+def resize_doses(doses, scale):
+  colunms, rows = np.shape(doses)
+  image = np.zeros([colunms, rows])
+  image[:, :] = doses
+  if scale != 1:
+    image = cv.resize(image, None, fx=scale, fy=scale, interpolation=cv.INTER_CUBIC)
+  return image
