@@ -99,7 +99,7 @@ class Sidebar extends React.Component {
                 !this.props.uploadButtons[0].isLoaded || 
                 !this.props.uploadButtons[1].isLoaded ||
                 this.props.action.buttons[0].done ||
-                this.props.action.buttons[1].doing
+                this.props.action.buttons[0].doing
               }
             >{this.props.action.buttons[0].text}
             </Button>
