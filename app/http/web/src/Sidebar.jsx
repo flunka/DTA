@@ -9,11 +9,7 @@ class Sidebar extends React.Component {
       navItems: Array(3).fill({
         isOpen: false
       }),
-      adjusted: false,
-      aligned: false,
-      adjust_text: 'Adjust doses',
-      align_text: 'Align doses',
-      images: Array(4).fill({
+      images: Array(5).fill({
         z: 0
       })
     }
@@ -44,7 +40,7 @@ class Sidebar extends React.Component {
       }      
     }
     images[num] = {
-      z: 4
+      z: 5
     };
     this.setState({
       images: images
@@ -52,55 +48,6 @@ class Sidebar extends React.Component {
 
   }
 
-  adjustOnClick(){
-    this.setState({
-        adjust_text: 'Adjusting doses...'
-      });
-    fetch(process.env.API_URL +'/AdjustDoses', { // Your POST endpoint
-      method: 'GET',
-      credentials: "include",
-    }).then(
-      response => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error('Something went wrong');
-        }
-      }
-    ).then(
-      success => this.setState({
-        adjusted:true,
-        adjust_text: 'Adjusted!'
-      })
-    ).catch(
-      error => console.log("Error!")// Handle the error response object
-    );
-  }
-
-  alignOnClick(){
-    this.setState({
-        align_text: 'Aligning doses...',
-      });
-    fetch(process.env.API_URL +'/AlignDoses', { // Your POST endpoint
-      method: 'GET',
-      credentials: "include",
-    }).then(
-      response => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error('Something went wrong');
-        }
-      }
-    ).then(
-      success => this.setState({
-        aligned:true,
-        align_text: 'Aligned!'
-      })
-    ).catch(
-      error => console.log("Error!")// Handle the error response object
-    );
-  }
 
   render(){
     return (
@@ -143,27 +90,37 @@ class Sidebar extends React.Component {
               type='applied'
               disable={!this.props.uploadButtons[1].isLoaded} />
             <Button className="m-0" variant="secondary" block
-              onClick={() => this.adjustOnClick()}
+              onClick={() => this.props.action.adjustOnClick()}
               disabled={
                 !this.props.uploadButtons[0].isLoaded || 
-                !this.props.uploadButtons[1].isLoaded}
-            >{this.state.adjust_text}
+                !this.props.uploadButtons[1].isLoaded ||
+                this.props.action.buttons[0].done
+              }
+            >{this.props.action.buttons[0].text}
             </Button>
-            <ShowButton text="Adjusted"
+            <ShowButton text="Adjusted plan"
               zIndex={this.state.images[2].z}
               imageOnClick={()=> this.imageOnClick(2)}
-              type='adjusted'
-              disable={!this.state.adjusted} />
-            <Button className="m-0" variant="secondary" block
-              onClick={() => this.alignOnClick()}
-              disabled={!this.state.adjusted}
-            >{this.state.align_text}
-            </Button>
-            <ShowButton text="Aligned"
+              type='adjusted_planned'
+              disable={!this.props.action.buttons[0].done} />
+            <ShowButton text="Adjusted realization"
               zIndex={this.state.images[3].z}
               imageOnClick={()=> this.imageOnClick(3)}
+              type='adjusted_applied'
+              disable={!this.props.action.buttons[0].done} />
+            <Button className="m-0" variant="secondary" block
+              onClick={() => this.props.action.alignOnClick()}
+              disabled={
+                !this.props.action.buttons[0].done ||
+                this.props.action.buttons[1].done
+              }
+            >{this.props.action.buttons[1].text}
+            </Button>
+            <ShowButton text="Aligned"
+              zIndex={this.state.images[4].z}
+              imageOnClick={()=> this.imageOnClick(4)}
               type='aligned'
-              disable={!this.state.aligned} />
+              disable={!this.props.action.buttons[1].done} />
           </div>
         </Collapse>
         <Alert 

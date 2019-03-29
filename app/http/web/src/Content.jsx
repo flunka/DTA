@@ -13,6 +13,21 @@ class Content extends React.Component {
       isLoading: false,
       isLoaded: false
     };*/
+
+    this.sidebarClick = this.sidebarClick.bind(this);
+    this.handleSelectedFile = this.handleSelectedFile.bind(this);
+    this.adjustOnClick = this.adjustOnClick.bind(this);
+    this.alignOnClick = this.alignOnClick.bind(this);
+    var actionButtons = Array(2).fill({
+        done: false,
+        text: null
+      });
+    actionButtons[0] = {
+      text:'Adjust doses'
+    };
+    actionButtons[1] = {
+      text: 'Align plan to realization'
+    };
     this.state = {
       sidebar: Array(2).fill({
         methodToRender: 0
@@ -22,14 +37,30 @@ class Content extends React.Component {
         isLoading: false,
         isLoaded: false,
         variant: 'secondary'
-      })
+      }),
+      action: {
+        buttons: actionButtons,
+        adjustOnClick:this.adjustOnClick,
+        alignOnClick: this.alignOnClick
+      },
+      
     };
-    this.sidebarClick = this.sidebarClick.bind(this);
-    this.handleSelectedFile = this.handleSelectedFile.bind(this);
   }
 
   handleSelectedFile(event, type){
     const uploadButtons = this.state.uploadButtons.slice();
+    const action = this.state.action;
+    var actionButtons = Array(2).fill({
+        done: false,
+        text: null
+      });
+    actionButtons[0] = {
+      text:'Adjust doses'
+    };
+    actionButtons[1] = {
+      text: 'Align plan to realization'
+    };
+    action.buttons = actionButtons;
     const file = event.target.files[0];
     uploadButtons[type] = {
       file: file,
@@ -37,7 +68,11 @@ class Content extends React.Component {
       isLoaded:false,
       variant: 'info'
     }
-    this.setState({uploadButtons: uploadButtons});
+
+    this.setState({
+      uploadButtons: uploadButtons,
+      action: action
+    });
     
     const form = new FormData();
     if (type == 0) {
@@ -100,6 +135,89 @@ class Content extends React.Component {
     }) 
   }
 
+  adjustOnClick(){
+    const buttons = this.state.action.buttons.slice();
+    const action = this.state.action;
+    buttons[0] = {
+      text:'Adjusting doses...'
+    };
+    action.buttons = buttons;
+    this.setState({
+        action: action
+      });
+    fetch(process.env.API_URL +'/AdjustDoses', { // Your POST endpoint
+      method: 'GET',
+      credentials: "include",
+    }).then(
+      response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Something went wrong');
+        }
+      }
+    ).then(
+      success => (
+          buttons[0] = {
+            done: true,
+            text: 'Adjusted!'
+          },
+          action.buttons = buttons,
+          this.setState({action: action})
+        )
+    ).catch(
+      error => (
+          buttons[1] = {
+            done: false,
+            text: 'Error during adjustment!'
+          },
+          action.buttons = buttons,
+          this.setState({action: action})
+        )
+    );
+  }
+
+  alignOnClick(){
+    const buttons = this.state.action.buttons.slice();
+    const action = this.state.action;
+    buttons[1]= {
+      text: 'Aligning doses...'
+    };
+    action.buttons = buttons;
+    this.setState({
+        action: action
+      });
+    fetch(process.env.API_URL +'/AlignDoses', { // Your POST endpoint
+      method: 'GET',
+      credentials: "include",
+    }).then(
+      response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Something went wrong');
+        }
+      }
+    ).then(
+      success => (
+          buttons[1] = {
+            done: true,
+            text: 'Aligned!'
+          },
+          action.buttons = buttons,
+          this.setState({action: action})
+        )
+    ).catch(
+      error => (
+          buttons[1] = {
+            done: false,
+            text: 'Error during aligment!'
+          },
+          action.buttons = buttons,
+          this.setState({action: action})
+        )
+    );
+  }
  
 
   render(){
@@ -108,7 +226,8 @@ class Content extends React.Component {
         <Sidebar 
           buttonOnClick={this.sidebarClick}
           handleSelectedFile={this.handleSelectedFile}
-          uploadButtons={this.state.uploadButtons} />    
+          uploadButtons={this.state.uploadButtons}
+          action={this.state.action} />    
         <MainPanel 
           sidebar={this.state.sidebar}          
           uploadButtons={this.state.uploadButtons} />
