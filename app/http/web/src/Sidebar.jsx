@@ -62,7 +62,9 @@ class Sidebar extends React.Component {
         </Alert>
         <Collapse in={this.state.navItems[0].isOpen}>
           <div id="actions">
-            <Button variant="secondary" type="submit" block>Run</Button>
+            <Button variant="secondary" type="submit" block
+              disabled={!this.props.action.buttons[1].done}
+            >Run</Button>
             <label className="m-0 w-100">
               <input type="file" 
                 onChange={(event) => this.props.handleSelectedFile(event, 0)} 
