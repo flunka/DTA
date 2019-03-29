@@ -20,13 +20,17 @@ class Content extends React.Component {
     this.alignOnClick = this.alignOnClick.bind(this);
     var actionButtons = Array(2).fill({
         done: false,
-        text: null
+        doing: false,
+        text: null,
+        variant: 'secondary'
       });
     actionButtons[0] = {
-      text:'Adjust doses'
+      text:'Adjust doses',
+      variant: 'secondary'
     };
     actionButtons[1] = {
-      text: 'Align plan to realization'
+      text: 'Align plan to realization',
+      variant: 'secondary'
     };
     this.state = {
       sidebar: Array(2).fill({
@@ -52,13 +56,17 @@ class Content extends React.Component {
     const action = this.state.action;
     var actionButtons = Array(2).fill({
         done: false,
-        text: null
+        doing: false,
+        text: null,
+        variant: 'secondary'
       });
     actionButtons[0] = {
-      text:'Adjust doses'
+      text:'Adjust doses',      
+      variant: 'secondary'
     };
     actionButtons[1] = {
-      text: 'Align plan to realization'
+      text: 'Align plan to realization',
+      variant: 'secondary'
     };
     action.buttons = actionButtons;
     const file = event.target.files[0];
@@ -139,7 +147,9 @@ class Content extends React.Component {
     const buttons = this.state.action.buttons.slice();
     const action = this.state.action;
     buttons[0] = {
-      text:'Adjusting doses...'
+      text:'Adjusting doses...',
+      doing: true,
+      variant: 'info'
     };
     action.buttons = buttons;
     this.setState({
@@ -160,7 +170,9 @@ class Content extends React.Component {
       success => (
           buttons[0] = {
             done: true,
-            text: 'Adjusted!'
+            doing: false,
+            text: 'Adjusted!',
+            variant: 'success'
           },
           action.buttons = buttons,
           this.setState({action: action})
@@ -169,7 +181,9 @@ class Content extends React.Component {
       error => (
           buttons[1] = {
             done: false,
-            text: 'Error during adjustment!'
+            doing: false,
+            text: 'Error during adjustment!',
+            variant: 'error'
           },
           action.buttons = buttons,
           this.setState({action: action})
@@ -181,7 +195,9 @@ class Content extends React.Component {
     const buttons = this.state.action.buttons.slice();
     const action = this.state.action;
     buttons[1]= {
-      text: 'Aligning doses...'
+      text: 'Aligning doses...',
+      doing: true,
+      variant: 'info'
     };
     action.buttons = buttons;
     this.setState({
@@ -202,7 +218,9 @@ class Content extends React.Component {
       success => (
           buttons[1] = {
             done: true,
-            text: 'Aligned!'
+            doing: false,
+            text: 'Aligned!',
+            variant: 'success'
           },
           action.buttons = buttons,
           this.setState({action: action})
@@ -211,7 +229,9 @@ class Content extends React.Component {
       error => (
           buttons[1] = {
             done: false,
-            text: 'Error during aligment!'
+            doing: false,
+            text: 'Error during aligment!',
+            variant: 'error'
           },
           action.buttons = buttons,
           this.setState({action: action})

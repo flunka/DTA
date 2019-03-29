@@ -91,12 +91,15 @@ class Sidebar extends React.Component {
               imageOnClick={()=> this.imageOnClick(1)}
               type='applied'
               disable={!this.props.uploadButtons[1].isLoaded} />
-            <Button className="m-0" variant="secondary" block
+            <Button className="m-0" 
+              variant={this.props.action.buttons[0].variant} 
+              block
               onClick={() => this.props.action.adjustOnClick()}
               disabled={
                 !this.props.uploadButtons[0].isLoaded || 
                 !this.props.uploadButtons[1].isLoaded ||
-                this.props.action.buttons[0].done
+                this.props.action.buttons[0].done ||
+                this.props.action.buttons[1].doing
               }
             >{this.props.action.buttons[0].text}
             </Button>
@@ -110,11 +113,14 @@ class Sidebar extends React.Component {
               imageOnClick={()=> this.imageOnClick(3)}
               type='adjusted_applied'
               disable={!this.props.action.buttons[0].done} />
-            <Button className="m-0" variant="secondary" block
+            <Button className="m-0" 
+              variant={this.props.action.buttons[1].variant} 
+              block
               onClick={() => this.props.action.alignOnClick()}
               disabled={
                 !this.props.action.buttons[0].done ||
-                this.props.action.buttons[1].done
+                this.props.action.buttons[1].done ||
+                this.props.action.buttons[1].doing
               }
             >{this.props.action.buttons[1].text}
             </Button>
