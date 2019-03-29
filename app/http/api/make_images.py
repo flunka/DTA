@@ -52,13 +52,10 @@ def make_applied_dose_image(file_name, path):
   doses = np.array(data)
   dataX = np.array(dataX)
   dataY = np.array(dataY)
-  # Resize dose to desired size
-  scale = 5
-  doses = resize_doses(doses, scale)[:(1 - scale), :(1 - scale)]
   # # save to file
   save_data(path, dataX, dataY, doses)
   # Create image
-  make_image(doses, "".join((path, "applied")), 2)
+  make_image(doses, "".join((path, "applied")), 10)
   make_nrrd(doses, "".join((path, "applied")))
 
 
@@ -124,6 +121,8 @@ def get_first_and_last_matching_index(planned, applied):
 
 
 def adjust_doses(planned_dose, applied_dose, path):
+  planned_path = "".join((path, "_planned/"))
+  applied_path = "".join((path, "_applied/"))
   step = 1
   firstX, lastX = get_first_and_last_matching_index(planned_dose.x, applied_dose.x)
   firstY, lastY = get_first_and_last_matching_index(planned_dose.y, applied_dose.y)
@@ -133,12 +132,24 @@ def adjust_doses(planned_dose, applied_dose, path):
       doses=planned_dose.doses[firstY:lastY + 1:step, firstX:lastX + 5 + 1:step]
   )
 
-  save_data(path,
+  save_data(planned_path,
             adjusted_planned_dose.x,
             adjusted_planned_dose.y,
             adjusted_planned_dose.doses)
-  make_image(adjusted_planned_dose.doses, "".join((path, "adjusted")), 2)
-  make_nrrd(adjusted_planned_dose.doses, "".join((path, "adjusted")))
+  make_image(adjusted_planned_dose.doses, "".join((planned_path, "adjusted_planned")), 2)
+  make_nrrd(adjusted_planned_dose.doses, planned_path)
+  # Adjusting applied doses
+  # Resize dose to desired size
+  scale = 5
+  adjusted_applied_doses = \
+      resize_doses(applied_dose.doses, scale)[:(1 - scale), :(1 - scale)]
+  # # save to file
+  save_data(applied_path,
+            applied_dose.x,
+            applied_dose.y,
+            adjusted_applied_doses)
+  make_image(adjusted_applied_doses, "".join((applied_path, "adjusted_applied")), 2)
+  make_nrrd(adjusted_applied_doses, applied_path)
 
 
 def align_doses(adjusted_planned_dose, applied_dose, path):

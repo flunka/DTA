@@ -126,10 +126,13 @@ class AdjustDoses(Resource):
     args = self.parser.parse_args()
     planned_path = create_path('planned')
     applied_path = create_path('applied')
-    adjusted_path = create_path('adjusted')
+    adjusted_path = "".join((create_path('')[:-1], "adjusted"))
+    create_path('adjusted_planned')
+    create_path('adjusted_applied')
     planned_dose = create_dose(planned_path)
     applied_dose = create_dose(applied_path)
     make_images.adjust_doses(planned_dose, applied_dose, adjusted_path)
+    return {'Success': 'Files have been adjusted successfully'}
 
 
 class AlignDoses(Resource):
@@ -141,12 +144,13 @@ class AlignDoses(Resource):
 
   def get(self):
     args = self.parser.parse_args()
-    applied_path = create_path('applied')
-    adjusted_path = create_path('adjusted')
+    applied_path = create_path('adjusted_applied')
+    adjusted_path = create_path('adjusted_planned')
     aligned_path = create_path('aligned')
     applied_dose = create_dose(applied_path)
     adjusted_dose = create_dose(adjusted_path)
     make_images.align_doses(adjusted_dose, applied_dose, aligned_path)
+    return {'Success': 'Files have been aligned successfully'}
 
 
 api.add_resource(DTA, '/', '/DTA')
