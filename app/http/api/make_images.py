@@ -123,13 +123,12 @@ def get_first_and_last_matching_index(planned, applied):
 def adjust_doses(planned_dose, applied_dose, path):
   planned_path = "".join((path, "_planned/"))
   applied_path = "".join((path, "_applied/"))
-  step = 1
   firstX, lastX = get_first_and_last_matching_index(planned_dose.x, applied_dose.x)
   firstY, lastY = get_first_and_last_matching_index(planned_dose.y, applied_dose.y)
   adjusted_planned_dose = Dose(
-      x=planned_dose.x[firstX:lastX + step + 1:step],
-      y=planned_dose.y[firstY:lastY + 1:step],
-      doses=planned_dose.doses[firstY:lastY + 1:step, firstX:lastX + 5 + 1:step]
+      x=planned_dose.x[firstX:lastX + 1],
+      y=planned_dose.y[firstY:lastY + 1],
+      doses=planned_dose.doses[firstY:lastY + 1, firstX:lastX + 1]
   )
 
   save_data(planned_path,
@@ -137,7 +136,7 @@ def adjust_doses(planned_dose, applied_dose, path):
             adjusted_planned_dose.y,
             adjusted_planned_dose.doses)
   make_image(adjusted_planned_dose.doses, "".join((planned_path, "adjusted_planned")), 2)
-  make_nrrd(adjusted_planned_dose.doses, planned_path)
+  make_nrrd(adjusted_planned_dose.doses, "".join((planned_path, "adjusted_planned")))
   # Adjusting applied doses
   # Resize dose to desired size
   scale = 5
@@ -149,7 +148,7 @@ def adjust_doses(planned_dose, applied_dose, path):
             applied_dose.y,
             adjusted_applied_doses)
   make_image(adjusted_applied_doses, "".join((applied_path, "adjusted_applied")), 2)
-  make_nrrd(adjusted_applied_doses, applied_path)
+  make_nrrd(adjusted_applied_doses, "".join((applied_path, "adjusted_applied")))
 
 
 def align_doses(adjusted_planned_dose, applied_dose, path):
