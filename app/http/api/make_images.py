@@ -140,8 +140,9 @@ def adjust_doses(planned_dose, applied_dose, path):
   # Adjusting applied doses
   # Resize dose to desired size
   scale = 5
+  additional_pixels = int(scale / 2)
   adjusted_applied_doses = \
-      resize_doses(applied_dose.doses, scale)[:(1 - scale), :(1 - scale)]
+      resize_doses(applied_dose.doses, scale)[additional_pixels:(0 - additional_pixels), additional_pixels:(0 - additional_pixels)]
   # # save to file
   save_data(applied_path,
             applied_dose.x,
@@ -203,5 +204,5 @@ def resize_doses(doses, scale):
   image[:, :] = doses
   if scale != 1:
     image = cv.resize(image, None, fx=scale, fy=scale,
-                      interpolation=cv.INTER_NEAREST)
+                      interpolation=cv.INTER_LINEAR)
   return image
