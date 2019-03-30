@@ -104,6 +104,7 @@ class Content extends React.Component {
       }
     ).then(
       success => (
+          uploadButtons = this.state.uploadButtons.slice();
           uploadButtons[type] = {
             file: file,
             isLoading: false,
@@ -116,6 +117,7 @@ class Content extends React.Component {
         )
     ).catch(
       error => (
+          uploadButtons = this.state.uploadButtons.slice();
           uploadButtons[type] = {
             file: file,
             isLoading: false,
