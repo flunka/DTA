@@ -181,7 +181,7 @@ class Content extends React.Component {
         )
     ).catch(
       error => (
-          buttons[1] = {
+          buttons[0] = {
             done: false,
             doing: false,
             text: 'Error during adjustment!',
