@@ -52,7 +52,7 @@ class Content extends React.Component {
   }
 
   handleSelectedFile(event, type){
-    const uploadButtons = this.state.uploadButtons.slice();
+    var uploadButtons = this.state.uploadButtons.slice();
     const action = this.state.action;
     var actionButtons = Array(2).fill({
         done: false,
@@ -104,7 +104,7 @@ class Content extends React.Component {
       }
     ).then(
       success => (
-          uploadButtons = this.state.uploadButtons.slice();
+          uploadButtons = this.state.uploadButtons.slice(),
           uploadButtons[type] = {
             file: file,
             isLoading: false,
@@ -117,7 +117,7 @@ class Content extends React.Component {
         )
     ).catch(
       error => (
-          uploadButtons = this.state.uploadButtons.slice();
+          uploadButtons = this.state.uploadButtons.slice(),
           uploadButtons[type] = {
             file: file,
             isLoading: false,
