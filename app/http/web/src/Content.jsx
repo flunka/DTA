@@ -183,7 +183,7 @@ class Content extends React.Component {
             done: false,
             doing: false,
             text: 'Error during adjustment!',
-            variant: 'error'
+            variant: 'danger'
           },
           action.buttons = buttons,
           this.setState({action: action})
@@ -231,7 +231,7 @@ class Content extends React.Component {
             done: false,
             doing: false,
             text: 'Error during aligment!',
-            variant: 'error'
+            variant: 'danger'
           },
           action.buttons = buttons,
           this.setState({action: action})
