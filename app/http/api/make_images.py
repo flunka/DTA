@@ -202,5 +202,6 @@ def resize_doses(doses, scale):
   image = np.zeros([colunms, rows])
   image[:, :] = doses
   if scale != 1:
-    image = cv.resize(image, None, fx=scale, fy=scale, interpolation=cv.INTER_CUBIC)
+    image = cv.resize(image, None, fx=scale, fy=scale,
+                      interpolation=cv.INTER_NEAREST)
   return image
