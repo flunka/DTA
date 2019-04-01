@@ -30,20 +30,13 @@ function CommonOptions(props) {
       </Row>
       <Row noGutters >{/*Methods checkboxes*/}
         <div key={'inline-checkbox'} className="mb-3 mx-auto">
-          <Form.Check inline label="Gamma-index method" type='checkbox' id={'inline-checkbox-1'} />
+          <Form.Check inline label="Gamma-index method" type='checkbox' id={'inline-checkbox-1'} checked />
           <Form.Check inline label="Van Dyk method" type='checkbox' id={'inline-checkbox-2'} />
           <Form.Check inline label="Dose difference method" type='checkbox' id={'inline-checkbox-3'} />
         </div>
       </Row>
       <Row noGutters className='ml-1'> {/*Method's parameters*/}
         <Col>{/*Thereshold & Min & Max*/}
-          <Form.Group as={Row} controlId="formThresholdGammaIndex">
-            <Form.Label column sm="9">Threshold for Gamma index method</Form.Label>
-            <Col sm="3">
-              <Form.Control type="number" defaultValue={1.00} 
-                defaultValue="1.00" min="0" max="99.99" step="0.01" />
-            </Col>
-          </Form.Group>
           <Form.Group as={Row} controlId="formMinimalValuesPercentage">
             <Form.Label column sm="9">Do not accout for percentage of minimal values</Form.Label>
             <Col sm="3">
@@ -51,10 +44,10 @@ function CommonOptions(props) {
                 defaultValue="0" min="0" step="0.1" max="30"/>
             </Col>
           </Form.Group>
-          <Form.Group as={Row} controlId="formMaximalDistanceToBeProbed">
-            <Form.Label column sm="9">Maximal distance to be probed for DTA [mm]</Form.Label>
+          <Form.Group as={Row} controlId="formPlanResolution">
+            <Form.Label column sm="9">Plan resolution [mm]</Form.Label>
             <Col sm="3">
-              <Form.Control type="number" defaultValue="0.00" min="0" max="99.99" step="0.01"/>
+              <Form.Control type="number" defaultValue="1.00" min="0" max="99.99" step="0.01"/>
             </Col>
           </Form.Group> 
         </Col>
