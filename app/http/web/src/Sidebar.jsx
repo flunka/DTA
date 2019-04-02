@@ -1,6 +1,7 @@
 import React from 'react';
 import {Alert, Col, Button, Collapse} from 'react-bootstrap';
 import ShowButton from './ShowButton.jsx';
+import RunButton from './RunButton.jsx';
 
 class Sidebar extends React.Component {
   constructor(props){
@@ -48,49 +49,55 @@ class Sidebar extends React.Component {
 
   }
 
+  renderUploadButton(text, index){
+    return(
+      <label className="m-0 w-100">
+        <input type="file" 
+          onChange={(event) => this.props.handleSelectedFile(event, index)} 
+          />
+        <Button className="m-0" as={Col} variant="secondary" block>
+          {text}
+        </Button>
+      </label> 
+      )
+  }
+
+  renderSidebarLabel(text, index){
+    return (
+      <Alert 
+        variant='dark' 
+        className='m-0 p-0 text-center'
+        onClick={() => this.sidebarOnClick(index)}
+        aria-controls="example-collapse-text"
+        aria-expanded={this.state.navItems[index].isOpen}>
+        {text}
+      </Alert>
+      )
+  }
+
 
   render(){
     return (
       <Col sm={3} id="sidebar">
-        <Alert 
-          variant='dark' 
-          className='m-0 p-0 text-center'
-          onClick={() => this.sidebarOnClick(0)}
-          aria-controls="example-collapse-text"
-          aria-expanded={this.state.navItems[0].isOpen}>
-          Actions
-        </Alert>
+        {this.renderSidebarLabel("Actions", 0)}
         <Collapse in={this.state.navItems[0].isOpen}>
           <div id="actions">
-            <Button variant="secondary" type="submit" block
+            <RunButton
               disabled={!this.props.action.buttons[0].done}
-            >Run</Button>
-            <label className="m-0 w-100">
-              <input type="file" 
-                onChange={(event) => this.props.handleSelectedFile(event, 0)} 
-                />
-              <Button className="m-0" as={Col} variant="secondary" block>
-              Browse planned dose file
-              </Button>
-            </label> 
+              aligned={this.props.action.buttons[1].done}>
+            </RunButton>
+            {this.renderUploadButton('Browse planned dose file', 0)}
             <ShowButton text="Plan"
               zIndex={this.state.images[0].z}
               imageOnClick={()=> this.imageOnClick(0)}
               type='planned'
-              disable={!this.props.uploadButtons[0].isLoaded} />
-            <label className="m-0 w-100">
-              <input type="file" 
-                onChange={(event) => this.props.handleSelectedFile(event, 1)} 
-                />
-              <Button className="m-0" as={Col} variant="secondary" block>
-              Browse applied dose file
-              </Button>
-            </label> 
+              disabled={!this.props.uploadButtons[0].isLoaded} />
+            {this.renderUploadButton('Browse applied dose file', 1)}
             <ShowButton text="Realization"
               zIndex={this.state.images[1].z}
               imageOnClick={()=> this.imageOnClick(1)}
               type='applied'
-              disable={!this.props.uploadButtons[1].isLoaded} />
+              disabled={!this.props.uploadButtons[1].isLoaded} />
             <Button className="m-0" 
               variant={this.props.action.buttons[0].variant} 
               block
@@ -107,12 +114,12 @@ class Sidebar extends React.Component {
               zIndex={this.state.images[2].z}
               imageOnClick={()=> this.imageOnClick(2)}
               type='adjusted_planned'
-              disable={!this.props.action.buttons[0].done} />
+              disabled={!this.props.action.buttons[0].done} />
             <ShowButton text="Adjusted realization"
               zIndex={this.state.images[3].z}
               imageOnClick={()=> this.imageOnClick(3)}
               type='adjusted_applied'
-              disable={!this.props.action.buttons[0].done} />
+              disabled={!this.props.action.buttons[0].done} />
             <Button className="m-0" 
               variant={this.props.action.buttons[1].variant} 
               block
@@ -128,17 +135,10 @@ class Sidebar extends React.Component {
               zIndex={this.state.images[4].z}
               imageOnClick={()=> this.imageOnClick(4)}
               type='aligned'
-              disable={!this.props.action.buttons[1].done} />
+              disabled={!this.props.action.buttons[1].done} />
           </div>
         </Collapse>
-        <Alert 
-          variant='dark' 
-          className='m-0 p-0 text-center'
-          onClick={() => this.sidebarOnClick(1)}
-          aria-controls="dose-method"
-          aria-expanded={this.state.navItems[1].isOpen}>
-          Dose quality assessment
-        </Alert>
+        {this.renderSidebarLabel("Dose quality assessment", 1)}
         <Collapse in={this.state.navItems[1].isOpen}>
           <div id="dose-method">
             {this.renderSidebarButton("Global method", 0, 0)}
@@ -146,14 +146,7 @@ class Sidebar extends React.Component {
             {this.renderSidebarButton("Point-wise local method", 2, 0)}
           </div>
         </Collapse>
-        <Alert 
-          variant='dark' 
-          className='m-0 p-0 text-center'
-          onClick={() => this.sidebarOnClick(2)}
-          aria-controls="example-collapse-text"
-          aria-expanded={this.state.navItems[2].isOpen}>
-          Distance to agreement assessment
-        </Alert>
+        {this.renderSidebarLabel("Distance to agreement assessment",2)}
         <Collapse in={this.state.navItems[2].isOpen}>
           <div id="distance-method">
             {this.renderSidebarButton("Global method", 0, 1)}

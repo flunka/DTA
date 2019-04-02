@@ -74,7 +74,7 @@ class ShowButon extends React.Component {
     );
     return(
       <div>
-        <Button block variant="secondary" disabled={this.props.disable} className="m-0" onClick={() => {
+        <Button block variant="secondary" disabled={this.props.disabled} className="m-0" onClick={() => {
           this.state.show ? this.setState({show: false}) : 
           this.get_image(this.props.type)}
           }
