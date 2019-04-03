@@ -18,7 +18,8 @@ class App extends React.Component {
   }
   connect_with_backend(){
     fetch(process.env.API_URL, { // Your POST endpoint
-      method: 'GET'
+      method: 'GET',
+      credentials: "include"
     }).then(
       response => (response.json()) // if the response is a JSON object
     ).then(

@@ -33,7 +33,7 @@ class DTA(Resource):
   def get(self):
     if 'id' not in session:
       session['id'] = generate_session_id()
-    return {'Success': 'Welcome'}, {'Access-Control-Allow-Origin': '*'}
+    return {'Success': 'Welcome'}
 
 
 def generate_session_id():
