@@ -28,3 +28,5 @@ app/http/api/static/upload/
 app/http/web/upload/
 app/http/web/dist/
 app/http/api/__pycache__/
+
+app/http/api/test/
