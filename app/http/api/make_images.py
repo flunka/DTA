@@ -196,6 +196,10 @@ def align_doses(adjusted_planned_dose, applied_dose, path):
 
   make_image(aligned_doses, "".join((path, "aligned")), 2)
   make_nrrd(aligned_doses, "".join((path, "aligned")))
+  save_data(path,
+            adjusted_planned_dose.x,
+            adjusted_planned_dose.y,
+            aligned_doses)
 
 
 def resize_doses(doses, scale):

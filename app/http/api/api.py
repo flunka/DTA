@@ -31,6 +31,8 @@ class DTA(Resource):
     return self.get()
 
   def get(self):
+    if 'id' not in session:
+      session['id'] = generate_session_id()
     return {'Success': 'Welcome'}, {'Access-Control-Allow-Origin': '*'}
 
 
@@ -153,11 +155,24 @@ class AlignDoses(Resource):
     return {'Success': 'Files have been aligned successfully'}
 
 
+class Run(Resource):
+  """docstring for Run"""
+
+  def __init__(self, arg):
+    super().__init__()
+    self.parser = reqparse.RequestParser()
+    self.parser.add_argument('ReferenceDistanceToAgreement', type=float)
+
+  def post(self):
+    return {'Success': "Analyzing has been completed!"}
+
+
 api.add_resource(DTA, '/', '/DTA')
 api.add_resource(AdjustDoses, '/AdjustDoses')
 api.add_resource(AlignDoses, '/AlignDoses')
 api.add_resource(UploadFile, '/Upload')
 api.add_resource(GetImage, '/GetImage')
+api.add_resource(Run, '/Run')
 
 if __name__ == '__main__':
   app.run(debug=True)
