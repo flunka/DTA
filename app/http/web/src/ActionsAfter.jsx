@@ -48,15 +48,15 @@ class ActionsAfter extends React.Component {
         }
         {this.props.results.dose_diff != "" && 
           <ShowButton text="Dose diffrence"
-          zIndex={this.state.images[0].z}
-          imageOnClick={()=> this.imageOnClick(0)}
+          zIndex={this.state.images[1].z}
+          imageOnClick={()=> this.imageOnClick(1)}
           type='dose_diff'
           disabled={false} />
         }
         {this.props.results.van_dyk != "" && 
           <ShowButton text="Van Dyk"
-          zIndex={this.state.images[0].z}
-          imageOnClick={()=> this.imageOnClick(0)}
+          zIndex={this.state.images[2].z}
+          imageOnClick={()=> this.imageOnClick(2)}
           type='van_dyk'
           disabled={false} />
         }
