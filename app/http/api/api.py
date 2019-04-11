@@ -6,6 +6,7 @@ from flask_cors import CORS
 from flask_restful import Resource, Api, reqparse, abort
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
+import numpy as np
 
 import time
 
@@ -40,7 +41,7 @@ def generate_session_id():
   return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(15))
 
 
-def create_path(folder):
+def get_path(folder):
   if 'id' not in session:
     session['id'] = generate_session_id()
   folder = '/'.join((session['id'], folder, ""))
@@ -107,7 +108,7 @@ class UploadFile(Resource):
     if uploaded_file and self.allowed_file(uploaded_file.filename):
       filename = secure_filename(uploaded_file.filename)
       folder = 'planned' if planned else 'applied'
-      upload_path = create_path(folder)
+      upload_path = get_path(folder)
       uploaded_file.save("".join((upload_path, filename)))
       if planned:
         make_images.make_planned_dose_image(file_name=filename, path=upload_path)
@@ -126,11 +127,11 @@ class AdjustDoses(Resource):
 
   def get(self):
     args = self.parser.parse_args()
-    planned_path = create_path('planned')
-    applied_path = create_path('applied')
-    adjusted_path = "".join((create_path('')[:-1], "adjusted"))
-    create_path('adjusted_planned')
-    create_path('adjusted_applied')
+    planned_path = get_path('planned')
+    applied_path = get_path('applied')
+    adjusted_path = "".join((get_path('')[:-1], "adjusted"))
+    get_path('adjusted_planned')
+    get_path('adjusted_applied')
     planned_dose = create_dose(planned_path)
     applied_dose = create_dose(applied_path)
     make_images.adjust_doses(planned_dose, applied_dose, adjusted_path)
@@ -146,9 +147,9 @@ class AlignDoses(Resource):
 
   def get(self):
     args = self.parser.parse_args()
-    applied_path = create_path('adjusted_applied')
-    adjusted_path = create_path('adjusted_planned')
-    aligned_path = create_path('aligned')
+    applied_path = get_path('adjusted_applied')
+    adjusted_path = get_path('adjusted_planned')
+    aligned_path = get_path('aligned')
     applied_dose = create_dose(applied_path)
     adjusted_dose = create_dose(adjusted_path)
     make_images.align_doses(adjusted_dose, applied_dose, aligned_path)
@@ -158,13 +159,78 @@ class AlignDoses(Resource):
 class Run(Resource):
   """docstring for Run"""
 
-  def __init__(self, arg):
+  def __init__(self):
     super().__init__()
     self.parser = reqparse.RequestParser()
-    self.parser.add_argument('ReferenceDistanceToAgreement', type=float)
+
+    self.parser.add_argument('DQA_method', type=str, required=True)
+    self.parser.add_argument('DTA_method', type=str, required=True)
+    self.parser.add_argument('plan', type=str, required=True)
+    self.parser.add_argument('gamma', type=str)
+    self.parser.add_argument('van_dyk', type=str)
+    self.parser.add_argument('dose_diff', type=str)
+    self.parser.add_argument('min_percentage', type=float)
+    self.parser.add_argument('plan_resolution', type=float)
+    self.parser.add_argument('coefficient_a', type=float)
+    # Global
+    self.parser.add_argument('maximum_dose_difference', type=float)
+    self.parser.add_argument('reference_distance_to_agreement', type=float)
+    # Clstering
+    self.parser.add_argument('dose_method', type=str)
+    self.parser.add_argument('variance_explained', type=float)
+    self.parser.add_argument('clusters_manually', type=str)
+    self.parser.add_argument('number_of_clusters', type=int)
+    self.parser.add_argument('max_probability_of_error', type=float)
+    self.parser.add_argument('is_sugested', type=str)
+    self.parser.add_argument('sugested_tolerance', type=float)
+    self.parser.add_argument('low_gradient_tolerance', type=float)
+    self.parser.add_argument('high_gradient_tolerance', type=float)
+    self.parser.add_argument('number_of_surrogates', type=int)
+
+    # Point-wise local
+    self.parser.add_argument('max_probalility', type=float)
+    self.parser.add_argument('surrogates', type=str)
+    self.parser.add_argument('number_of_samples', type=float)
+    self.parser.add_argument('max_probability_of_PTH_error', type=float)
+    self.parser.add_argument('max_probability_of_PTH_error', type=float)
+
+    ##Clustering and Piont-wise
+    self.parser.add_argument('blur_of_surrogates', type=float)
+    self.parser.add_argument('distance_method', type=str)
 
   def post(self):
-    return {'Success': "Analyzing has been completed!"}
+    args = self.parser.parse_args()
+    applied_path = get_path('adjusted_applied')
+    applied_dose = create_dose(applied_path)
+    chosen_dose = None
+    print(args['plan'])
+    if(args['plan'] == "adjusted"):
+      adjusted_path = get_path('adjusted_planned')
+      chosen_dose = create_dose(adjusted_path)
+    elif(args['plan'] == "aligned"):
+      aligned_path = get_path('aligned')
+      chosen_dose = create_dose(aligned_path)
+    else:
+      return abort(403, error_message='Invalid chosen plan!')
+    gamma, dose_diff, van_dyk = make_images.run(applied_dose.doses, chosen_dose.doses, args)
+    gamma_url = dose_diff_url = van_dyk_url = ""
+    if(np.any(gamma)):
+      gamma_path = "".join((get_path('gamma'), 'gamma'))
+      make_images.make_image(gamma, gamma_path, 2)
+      make_images.make_nrrd(gamma, gamma_path)
+      gamma_url = "".join(('/upload/', session['id'], '/gamma/gamma.jpg'))
+    if(np.any(dose_diff) != None):
+      dose_diff_path = "".join((get_path('dose_diff'), 'dose_diff'))
+      make_images.make_image(dose_diff, dose_diff_path, 2)
+      make_images.make_nrrd(dose_diff, dose_diff_path)
+      dose_diff_url = "".join(('/upload/', session['id'], '/dose_diff/dose_diff.jpg'))
+    if(np.any(van_dyk) != None):
+      van_dyk_path = "".join((get_path('van_dyk'), 'van_dyk'))
+      make_images.make_image(van_dyk, van_dyk_path, 2)
+      make_images.make_nrrd(van_dyk, van_dyk_path)
+      van_dyk_url = "".join(('/upload/', session['id'], '/van_dyk/van_dyk.jpg'))
+
+    return {'gamma': gamma_url, 'dose_diff': dose_diff_url, 'van_dyk': van_dyk_url}
 
 
 api.add_resource(DTA, '/', '/DTA')
