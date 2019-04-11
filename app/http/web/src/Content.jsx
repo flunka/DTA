@@ -1,9 +1,12 @@
 import React from 'react';
-import {Row, Col, Button} from 'react-bootstrap';
+import {Row, Col, Button, Form} from 'react-bootstrap';
+import {RingLoader} from 'react-spinners';
+
 
 
 import Sidebar from './Sidebar.jsx';
 import MainPanel from './MainPanel.jsx';
+import ResultPanel from './ResultPanel.jsx';
 
 class Content extends React.Component {
   constructor(props){
@@ -18,6 +21,8 @@ class Content extends React.Component {
     this.handleSelectedFile = this.handleSelectedFile.bind(this);
     this.adjustOnClick = this.adjustOnClick.bind(this);
     this.alignOnClick = this.alignOnClick.bind(this);
+    this.runOnClick =this.runOnClick.bind(this);
+    this.resetResults = this.resetResults.bind(this);
     var actionButtons = Array(2).fill({
         done: false,
         doing: false,
@@ -34,7 +39,7 @@ class Content extends React.Component {
     };
     this.state = {
       sidebar: Array(2).fill({
-        methodToRender: 0
+        methodToRender: 'global'
       }),
       uploadButtons: Array(2).fill({
         file: null,
@@ -46,6 +51,14 @@ class Content extends React.Component {
         buttons: actionButtons,
         adjustOnClick:this.adjustOnClick,
         alignOnClick: this.alignOnClick
+      },
+      chosen_plan: null,
+      results: {
+        status: "before",
+        gamma: "",
+        dose_diff: "",
+        van_dyk: "",
+        reset: this.resetResults
       },
       
     };
@@ -240,20 +253,92 @@ class Content extends React.Component {
         )
     );
   }
+
+  handleSubmit(event) {
+    event.preventDefault();
+    if(this.state.chosen_plan != null){
+      const data = new FormData(event.target);
+      data.append('DQA_method', this.state.sidebar[0].methodToRender);
+      data.append('DTA_method', this.state.sidebar[1].methodToRender);
+      var results = this.state.results;
+      results.status = "process";
+      this.setState({"results": results})
+      fetch(process.env.API_URL + '/Run?plan=' + this.state.chosen_plan, {
+        method: 'POST',
+        credentials: "include",
+        body: data,
+      }).then(
+      response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Something went wrong');
+        }
+      }
+    ).then(
+      success => (
+          results.status = "after",
+          results.gamma = success.gamma,
+          results.dose_diff = success.dose_diff,
+          results.van_dyk = success.van_dyk,
+          this.setState({"results": results})
+        )
+    ).catch(
+      error => (
+          results.status = "after",
+          this.setState({"results": results})
+        )
+    );      
+      this.setState({chosen_plan: null});
+    }
+  } 
+
+  runOnClick(plan){
+    this.setState({chosen_plan: plan});
+  }
+
+  resetResults(){
+    var results = this.state.results;
+    results.status = "before";
+    results.gamma = "";
+    results.dose_diff = "";
+    results.van_dyk = "";
+    this.setState({results:results});
+  }
+
+
  
 
   render(){
     return (
-      <Row noGutters>          
-        <Sidebar 
-          buttonOnClick={this.sidebarClick}
-          handleSelectedFile={this.handleSelectedFile}
-          uploadButtons={this.state.uploadButtons}
-          action={this.state.action} />    
-        <MainPanel 
-          sidebar={this.state.sidebar}          
-          uploadButtons={this.state.uploadButtons} />
-      </Row>
+      <Form onSubmit={e => this.handleSubmit(e)}>
+        <Row noGutters>          
+            <Sidebar 
+              buttonOnClick={this.sidebarClick}
+              handleSelectedFile={this.handleSelectedFile}
+              uploadButtons={this.state.uploadButtons}
+              action={this.state.action}
+              run={this.runOnClick}
+              results={this.state.results} />    
+            {this.state.results.status === "before" && 
+              <MainPanel 
+                sidebar={this.state.sidebar}          
+                uploadButtons={this.state.uploadButtons} />
+            }
+            {this.state.results.status === "process" && 
+              <Col sm={9} >
+                <Row noGutters className="d-flex justify-content-center align-self-stretch">Processing your request...</Row>
+                <Row noGutters className="d-flex justify-content-center align-self-stretch">
+                  <RingLoader/>
+                </Row>
+              </Col>
+            }
+            {this.state.results.status === "after" &&
+              <ResultPanel
+                results={this.state.results} />
+            }
+        </Row>
+      </Form>
     )   
   }
 }

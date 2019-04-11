@@ -13,13 +13,15 @@ class RunButton extends React.Component {
       show: false,
     };
   }
-  renderButton(text,disabled){
+
+   
+  renderButton(text,disabled,type){
     return(
       <Button 
         variant="secondary" type="submit" 
         block
-        onClick={() => this.setState({show:!this.state.show})}
-        disabled={disabled}>
+        disabled={disabled}
+        onClick={() => (this.props.run(type), this.setState({show:false}))}>
         {text}
       </Button>
       );
@@ -27,27 +29,13 @@ class RunButton extends React.Component {
   renderPopover(){
     return(
         <Popover  title="Compare adjusted realization with" >
-          {this.renderButton('Adjusted plan',false)}
-          {this.renderButton('Aligned plan',!this.props.aligned)}
+          {this.renderButton('Adjusted plan',false,'adjusted')}
+          {this.renderButton('Aligned plan',!this.props.aligned, 'aligned')}
         </Popover>
       )
   };
 
-  render(){
-    
-    var popover = (
-        <Popover  title="Compare adjusted realization with"  >
-          <Button variant="secondary" type="submit" 
-            block>
-            Adjusted plan
-          </Button>
-          <Button variant="secondary" type="submit" 
-            block disabled={!this.props.aligned}>
-            Aligned plan
-          </Button> 
-        </Popover>
-      );
-    
+  render(){   
     return(
       <div>
         <Button 

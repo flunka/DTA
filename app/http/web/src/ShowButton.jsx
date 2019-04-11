@@ -27,7 +27,7 @@ class ShowButon extends React.Component {
     ).then(
       success => (
           this.setState({
-            url: success.image,
+            url: success.image + '?' + Date.now(),
             show: !this.state.show
           })
         )
