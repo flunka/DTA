@@ -2,7 +2,8 @@ import numpy as np
 import cv2 as cv
 import nrrd
 import math
-fname = "applied.txt"
+import numba
+from numba import jit
 
 
 class Dose(object):
@@ -214,22 +215,19 @@ def resize_doses(doses, scale):
 
 
 def make_van_dyk_matrix(dose_diff, DTA, reference_dose_tolerance, reference_distance_tolerance):
-  cols, rows = dose_diff.shape
-  van_dyk = np.zeros([cols, rows])
-  for i in range(0, cols):
-    for j in range(0, rows):
-      if dose_diff[i, j] > reference_dose_tolerance[i, j] and DTA[i, j] > reference_distance_tolerance[i, j]:
-        van_dyk[i, j] = 255
-  return van_dyk
+  return np.where(dose_diff > reference_dose_tolerance,
+                  np.where(DTA > reference_distance_tolerance, 255, 0),
+                  0)
 
 
+@jit(nopython=True)
 def make_DTA_matrix(adjusted_applied, chosen_plan, reference_distance_to_agreement):
-  max_distance = 3 * int(reference_distance_to_agreement)
+  max_distance = 10 * int(reference_distance_to_agreement)
   cols, rows = adjusted_applied.shape
   frame = range(-max_distance, max_distance + 1)
   rdts_pow2 = reference_distance_to_agreement**2
 
-  DTA = np.zeros([cols, rows])
+  DTA = np.full_like(chosen_plan, 0)
 
   for i in range(0, cols):
     for j in range(0, rows):
@@ -275,18 +273,14 @@ def make_DTA_matrix(adjusted_applied, chosen_plan, reference_distance_to_agreeme
 
 
 def make_dose_diff_matrix(adjusted_applied, chosen_plan, min_percentage, reference_dose_tolerance):
-  cols, rows = adjusted_applied.shape
-  dose_diff = np.zeros([cols, rows])
   max_value_chosen_plan = np.amax(chosen_plan)
   minimal_value = min_percentage / 100 * max_value_chosen_plan
-  for i in range(0, cols):
-    for j in range(0, rows):
-      if(chosen_plan[i, j] > minimal_value):
-        if(abs(chosen_plan[i, j] - adjusted_applied[i, j]) > reference_dose_tolerance[i, j]):
-          dose_diff[i, j] = 255
-  return dose_diff
+  return np.where(chosen_plan > minimal_value,
+                  np.where(np.absolute(chosen_plan - adjusted_applied) > reference_dose_tolerance, 255, 0),
+                  0)
 
 
+@jit(nopython=True)
 def make_gamma_matrix(adjusted_applied, chosen_plan, min_percentage, reference_distance_tolerance, reference_dose_tolerance):
   gamma = np.full_like(chosen_plan, 255.0)
   max_value_chosen_plan = np.amax(chosen_plan)
