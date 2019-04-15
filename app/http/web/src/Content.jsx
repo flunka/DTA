@@ -23,6 +23,8 @@ class Content extends React.Component {
     this.alignOnClick = this.alignOnClick.bind(this);
     this.runOnClick =this.runOnClick.bind(this);
     this.resetResults = this.resetResults.bind(this);
+    this.onChange = this.onChange.bind(this);
+    this.dose_diffOnChange = this.dose_diffOnChange.bind(this);
     var actionButtons = Array(2).fill({
         done: false,
         doing: false,
@@ -60,7 +62,37 @@ class Content extends React.Component {
         van_dyk: "",
         reset: this.resetResults
       },
-      
+      form: {
+        onChange: this.onChange,
+        dose_diffOnChange: this.dose_diffOnChange,
+        gamma: true,
+        dose_diff: false,
+        van_dyk: false,
+        plan_resolution: 1,
+        min_percentage: 0,
+        maximum_dose_difference: 0,
+        reference_distance_to_agreement: 1,
+        distance_method: "gaussian",
+        is_sugested: false,
+        sugested_tolerance: 0,
+        low_gradient_tolerance: 0,
+        high_gradient_tolerance: 0,
+        number_of_surrogates: 0,
+        blur_of_surrogates: 0,
+        dose_method: "gaussian",
+        variance_explained: 0,
+        clusters_manually: false,
+        number_of_clusters: 0,
+        max_probability_of_error: 0,
+        distance_local_method: "DTA6",
+        surrogates: false,
+        number_of_samples: 0,
+        max_probability_of_PTH_error: 0,
+        log_PTH: 0,
+        blur_of_surrogates: 0,
+        max_probalility: 0,
+        coefficient_a: 0,
+      },      
     };
   }
 
@@ -306,7 +338,30 @@ class Content extends React.Component {
     this.setState({results:results});
   }
 
+  onChange(e){
+    const target = event.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const name = target.name;
+    var form = this.state.form;
+    form[name] = value;
+    this.setState({
+      form:form
+    });
+  }
 
+  dose_diffOnChange(e){
+    const target = event.target;
+    const value = target.checked
+    const name = target.name;
+    var form = this.state.form;
+    form[name] = value;
+    if(!value){
+      form.van_dyk = false;
+    }
+    this.setState({
+      form:form
+    });
+  }
  
 
   render(){
@@ -323,7 +378,8 @@ class Content extends React.Component {
             {this.state.results.status === "before" && 
               <MainPanel 
                 sidebar={this.state.sidebar}          
-                uploadButtons={this.state.uploadButtons} />
+                uploadButtons={this.state.uploadButtons}
+                form={this.state.form} />
             }
             {this.state.results.status === "process" && 
               <Col sm={9} >

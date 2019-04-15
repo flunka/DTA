@@ -28,25 +28,32 @@ class MainPanel extends React.Component {
       <Col id="Content" sm={9}>
           <CommonOptions 
           handleSelectedFile={this.props.handleSelectedFile}
-          uploadButtons={this.props.uploadButtons} />
+          uploadButtons={this.props.uploadButtons}
+          form={this.props.form} />
           <Row noGutters>
             <Col>
             <Alert variant='dark' className='m-0 p-0 text-center'>Dose quality assessment</Alert>
               { this.props.sidebar[0].methodToRender === 'global' && 
-                <GlobalMethodOptionsDose />}
+                <GlobalMethodOptionsDose
+                  form={this.props.form} />}
               { this.props.sidebar[0].methodToRender === 'clustering' && 
-                <ClusteringMethodOptionsDose />}
+                <ClusteringMethodOptionsDose
+                  form={this.props.form} />}
               { this.props.sidebar[0].methodToRender === 'local' && 
-                <PointWiseLocalMethodOptionsDose />}
+                <PointWiseLocalMethodOptionsDose
+                  form={this.props.form} />}
             </Col>
             <Col>
             <Alert variant='dark' className='m-0 p-0 text-center'>Distance to agreement assessment</Alert>
               { this.props.sidebar[1].methodToRender === 'global' && 
-                <GlobalMethodOptionsDistance />}
+                <GlobalMethodOptionsDistance 
+                  form={this.props.form}/>}
               { this.props.sidebar[1].methodToRender === 'clustering' && 
-                <ClusteringMethodOptionsDistance />}
+                <ClusteringMethodOptionsDistance 
+                  form={this.props.form}/>}
               { this.props.sidebar[1].methodToRender === 'local' && 
-                <PointWiseLocalMethodOptionsDistance />}
+                <PointWiseLocalMethodOptionsDistance 
+                  form={this.props.form}/>}
             </Col>
           </Row>
       </Col>

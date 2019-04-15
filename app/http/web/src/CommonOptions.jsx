@@ -8,12 +8,16 @@ class CommonOptions extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      dose_diff:false
+      dose_diff:false,
+      relative:false
     }
   }
 
   dose_diffOnClick(){
     this.setState({dose_diff: !this.state.dose_diff});
+  }
+  relativeOnChange(){
+    this.setState({relative:!this.state.relative});
   }
 
   render(){
@@ -43,10 +47,17 @@ class CommonOptions extends React.Component {
         <Row noGutters >{/*Methods checkboxes*/}
           <div className="mb-3 mx-auto">
             <Form.Check inline label="Gamma-index method" name="gamma"
-              type='checkbox' defaultChecked />          
-            <Form.Check inline label="Dose difference method" type='checkbox' name="dose_diff"
-            onClick={() => this.dose_diffOnClick()} /> 
-            <Form.Check inline label="Van Dyk method" type='checkbox' name="van_dyk" disabled={!this.state.dose_diff} />
+              type='checkbox'
+              onChange={(e) => this.props.form.onChange(e)}
+              checked={this.props.form.gamma} />          
+            <Form.Check inline label="Dose difference method" type='checkbox' 
+              name="dose_diff"
+              onChange={(e) => this.props.form.dose_diffOnChange(e)}
+              checked={this.props.form.dose_diff}
+              /> 
+            <Form.Check inline label="Van Dyk method" type='checkbox' name="van_dyk" disabled={!this.props.form.dose_diff}
+              onChange={(e) => this.props.form.onChange(e)}
+              checked={this.props.form.van_dyk}  />
           </div>
         </Row>
         <Row noGutters className='ml-1'> {/*Method's parameters*/}
@@ -54,34 +65,48 @@ class CommonOptions extends React.Component {
             <Form.Group as={Row}>
               <Form.Label column sm="9">Do not accout for percentage of minimal values</Form.Label>
               <Col sm="3">
-                <Form.Control name="min_percentage" type="number" defaultValue={0.1} 
-                  defaultValue="0" min="0" step="0.1" max="30"/>
+                <Form.Control name="min_percentage" type="number" 
+                  min="0" step="0.1" max="30"
+                  onChange={(e) => this.props.form.onChange(e)}
+                  value={this.props.form.min_percentage}/>
               </Col>
             </Form.Group>
             <Form.Group as={Row}>
               <Form.Label column sm="9">Plan resolution [mm]</Form.Label>
               <Col sm="3">
                 <Form.Control type="number" name="plan_resolution"
-                  defaultValue="1.00" min="0" max="99.99" step="0.01"/>
+                  min="0" max="99.99" step="0.01"
+                  onChange={(e) => this.props.form.onChange(e)}
+                  value={this.props.form.plan_resolution}/>
               </Col>
             </Form.Group> 
           </Col>
-          <Col>{/* Linear Coefficients*/}
-            <Row noGutters className='ml-1'>
-              <label>Linear model for standard deviation of delivered dose: SD(Dose)=A*Dose</label>
-            </Row>
-            <Row noGutters>
-              <Col>
-                <Form.Group className='ml-1' as={Row} noGutters>
-                  <Form.Label column sm="2">A</Form.Label>
-                  <Col sm="10">
-                    <Form.Control type="number" name="coefficient_a"
-                      defaultValue="0.1" min="0" max="99.99" step="0.01" />
-                  </Col>
-                </Form.Group>
-              </Col>
-            </Row>
-          </Col>        
+          <Col>
+            <Form.Check type="radio" name="analysis" 
+              label="Absolute analysis"
+              onChange={(e) => this.props.form.onChange(e)}
+              value="absolute"
+              checked={this.props.form.analysis === "absolute"} />
+            <Form.Check type="radio" name="analysis" 
+              label="Relative analysis" 
+              onChange={(e) => this.props.form.onChange(e)}
+              value="relative"
+              checked={this.props.form.analysis === "relative"} />
+            { this.props.form.analysis === "relative" && 
+              <Row noGutters>
+                <Form.Check inline label="Adjust maximal doses" 
+                  name="adjust_maximal_doses"
+                  type='checkbox'
+                  onChange={(e) => this.props.form.onChange(e)}
+                  value={this.props.form.adjust_maximal_doses} />
+                <Form.Check inline label="Adjust minimal doses" 
+                  name="adjust_minimal_doses"
+                  type='checkbox'
+                  onChange={(e) => this.props.form.onChange(e)}
+                  value={this.props.form.adjust_minimal_doses} />
+              </Row>
+            }
+          </Col>       
         </Row>
         
       </Container>
