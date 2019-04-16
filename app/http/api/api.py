@@ -219,18 +219,23 @@ class Run(Resource):
       make_images.make_image(gamma, gamma_path, 2)
       make_images.make_nrrd(gamma, gamma_path)
       gamma_url = "".join(('/upload/', session['id'], '/gamma/gamma.jpg'))
+      gamma_passing_rate = round(((gamma.size - np.count_nonzero(gamma)) / gamma.size) * 100, 2)
     if(np.any(dose_diff) != None):
       dose_diff_path = "".join((get_path('dose_diff'), 'dose_diff'))
       make_images.make_image(dose_diff, dose_diff_path, 2)
       make_images.make_nrrd(dose_diff, dose_diff_path)
       dose_diff_url = "".join(('/upload/', session['id'], '/dose_diff/dose_diff.jpg'))
+      dose_diff_passing_rate = round(((dose_diff.size - np.count_nonzero(dose_diff)) / dose_diff.size) * 100, 2)
     if(np.any(van_dyk) != None):
       van_dyk_path = "".join((get_path('van_dyk'), 'van_dyk'))
       make_images.make_image(van_dyk, van_dyk_path, 2)
       make_images.make_nrrd(van_dyk, van_dyk_path)
       van_dyk_url = "".join(('/upload/', session['id'], '/van_dyk/van_dyk.jpg'))
+      van_dyk_passing_rate = round(((van_dyk.size - np.count_nonzero(van_dyk)) / van_dyk.size) * 100, 2)
 
-    return {'gamma': gamma_url, 'dose_diff': dose_diff_url, 'van_dyk': van_dyk_url}
+    return {'gamma': gamma_url, 'dose_diff': dose_diff_url, 'van_dyk': van_dyk_url,
+            'gamma_passing_rate': gamma_passing_rate, 'dose_diff_passing_rate': dose_diff_passing_rate,
+            'van_dyk_passing_rate': van_dyk_passing_rate}
 
 
 api.add_resource(DTA, '/', '/DTA')

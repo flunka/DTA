@@ -313,6 +313,9 @@ class Content extends React.Component {
           results.gamma = success.gamma,
           results.dose_diff = success.dose_diff,
           results.van_dyk = success.van_dyk,
+          results.gamma_passing_rate = success.gamma_passing_rate,
+          results.dose_diff_passing_rate = success.dose_diff_passing_rate,
+          results.van_dyk_passing_rate = success.van_dyk_passing_rate,
           this.setState({"results": results})
         )
     ).catch(
