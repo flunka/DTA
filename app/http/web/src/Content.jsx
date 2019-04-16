@@ -338,7 +338,7 @@ class Content extends React.Component {
     this.setState({results:results});
   }
 
-  onChange(e){
+  onChange(event){
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
@@ -349,7 +349,7 @@ class Content extends React.Component {
     });
   }
 
-  dose_diffOnChange(e){
+  dose_diffOnChange(event){
     const target = event.target;
     const value = target.checked
     const name = target.name;
