@@ -272,6 +272,53 @@ def make_DTA_matrix(adjusted_applied, chosen_plan, plan_resolution):
   return DTA
 
 
+@jit(nopython=True)
+def make_alt_DTA_matrix(adjusted_applied, chosen_plan, reference_distance_tolerance, min_percentage):
+  DTA = 2 * reference_distance_tolerance
+  max_value_chosen_plan = np.amax(chosen_plan)
+  minimal_value = min_percentage / 100 * max_value_chosen_plan
+  cols, rows = adjusted_applied.shape
+  for i in range(0, cols):
+    for j in range(0, rows):
+      if(chosen_plan[i, j] > minimal_value):
+        min_delta = max_delta = adjusted_applied[i, j] - chosen_plan[i, j]
+        frame = range(-int(reference_distance_tolerance[i, j]), int(reference_distance_tolerance[i, j]) + 1)
+        for k in frame:
+          for l in frame:
+            if(k**2 + l**2 <= reference_distance_tolerance[i, j]**2 and
+               i + k >= 0 and i + k < cols and j + l >= 0 and j + l < rows):
+              delta = adjusted_applied[i, j] - chosen_plan[i + k, j + l]
+              if delta < min_delta:
+                min_delta = delta
+              if delta > max_delta:
+                max_delta = delta
+        if DTA[i, j] != 0:
+          if (max_delta > 0 and min_delta < 0):
+            DTA[i, j] = 0
+        if DTA[i, j] != 0:
+          frame = range(-int(reference_distance_tolerance[i, j]) - 1, int(reference_distance_tolerance[i, j]) + 2)
+          for k in frame:
+            for l in frame:
+              if(k**2 + l**2 > reference_distance_tolerance[i, j] - 0.5 and
+                 i + k >= 0 and i + k < cols and j + l >= 0 and j + l < rows):
+                delta = adjusted_applied[i, j] - chosen_plan[i + k, j + l]
+                second_frame_size = 2
+                second_frame = range(-second_frame_size, second_frame_size + 1)
+                for m in second_frame:
+                  for n in second_frame:
+                    if((k + m)**2 + (l + n)**2 > reference_distance_tolerance[i, j]**2 and
+                       i + k + m >= 0 and i + k + m < cols and j + l + n >= 0 and j + l + n < rows):
+                      delta2 = adjusted_applied[i, j] - chosen_plan[i + k + m, j + l + n]
+                      if delta * delta2 < 0:
+                        sx = m / (delta2 - delta) * delta2 + k
+                        sy = n / (delta2 - delta) * delta2 + l
+                        if sx**2 + sy**2 <= reference_distance_tolerance[i, j]**2:
+                          DTA[i, j] = 0
+      else:
+        DTA[i, j] = 0
+  return DTA
+
+
 def make_dose_diff_matrix(adjusted_applied, chosen_plan, min_percentage, reference_dose_tolerance):
   max_value_chosen_plan = np.amax(chosen_plan)
   minimal_value = min_percentage / 100 * max_value_chosen_plan
@@ -386,7 +433,8 @@ def run(applied_plan, chosen_plan, options):
   if(options['dose_diff'] == 'on'):
     dose_diff = make_dose_diff_matrix(applied_plan, chosen_plan, options['min_percentage'], reference_dose_tolerance)
   if(options['van_dyk'] == 'on' and np.any(dose_diff)):
-    DTA_matrix = make_DTA_matrix(applied_plan, chosen_plan, options['plan_resolution'])
+    # DTA_matrix = make_DTA_matrix(applied_plan, chosen_plan, options['plan_resolution'])
+    DTA_matrix = make_alt_DTA_matrix(applied_plan, chosen_plan, reference_distance_tolerance, options['min_percentage'])
     van_dyk = make_van_dyk_matrix(dose_diff, DTA_matrix, reference_dose_tolerance, reference_distance_tolerance)
 
   return (gamma, dose_diff, van_dyk)
