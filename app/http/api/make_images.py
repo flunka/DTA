@@ -420,7 +420,23 @@ def create_reference_dose_tolerance(chosen_plan, method, options):
   return reference_dose_tolerance
 
 
-def run(applied_plan, chosen_plan, options):
+def adjust_maximal_doses(applied_dose, chosen_plan):
+  max_applied_value = np.amax(applied_dose)
+  max_planned_value = np.amax(chosen_plan)
+  return np.where(applied_dose == max_applied_value,
+                  max_planned_value,
+                  applied_dose)
+
+
+def adjust_minimal_doses(applied_dose, chosen_plan):
+  min_applied_value = np.amin(applied_dose)
+  min_planned_value = np.amin(chosen_plan)
+  return np.where(applied_dose == min_applied_value,
+                  min_planned_value,
+                  applied_dose)
+
+
+def run(applied_dose, chosen_plan, options):
   gamma = van_dyk = dose_diff = None
   reference_distance_tolerance = \
       create_reference_distance_tolerance(chosen_plan,
@@ -428,13 +444,20 @@ def run(applied_plan, chosen_plan, options):
   reference_dose_tolerance = \
       create_reference_dose_tolerance(chosen_plan,
                                       options['DQA_method'], options)
+  before = applied_dose
+  if options['analysis'] == 'relative':
+    if options['adjust_maximal_doses']:
+      applied_dose = adjust_maximal_doses(applied_dose, chosen_plan)
+    if options['adjust_minimal_doses']:
+      applied_dose = adjust_minimal_doses(applied_dose, chosen_plan)
+  print(np.array_equal(before, applied_dose))
   if(options['gamma'] == 'on'):
-    gamma = make_gamma_matrix(applied_plan, chosen_plan, options['min_percentage'], reference_distance_tolerance, reference_dose_tolerance)
+    gamma = make_gamma_matrix(applied_dose, chosen_plan, options['min_percentage'], reference_distance_tolerance, reference_dose_tolerance)
   if(options['dose_diff'] == 'on'):
-    dose_diff = make_dose_diff_matrix(applied_plan, chosen_plan, options['min_percentage'], reference_dose_tolerance)
+    dose_diff = make_dose_diff_matrix(applied_dose, chosen_plan, options['min_percentage'], reference_dose_tolerance)
   if(options['van_dyk'] == 'on' and np.any(dose_diff)):
-    # DTA_matrix = make_DTA_matrix(applied_plan, chosen_plan, options['plan_resolution'])
-    DTA_matrix = make_alt_DTA_matrix(applied_plan, chosen_plan, reference_distance_tolerance, options['min_percentage'])
+    # DTA_matrix = make_DTA_matrix(applied_dose, chosen_plan, options['plan_resolution'])
+    DTA_matrix = make_alt_DTA_matrix(applied_dose, chosen_plan, reference_distance_tolerance, options['min_percentage'])
     van_dyk = make_van_dyk_matrix(dose_diff, DTA_matrix, reference_dose_tolerance, reference_distance_tolerance)
 
   return (gamma, dose_diff, van_dyk)
