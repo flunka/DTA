@@ -25,6 +25,7 @@ class Content extends React.Component {
     this.resetResults = this.resetResults.bind(this);
     this.onChange = this.onChange.bind(this);
     this.dose_diffOnChange = this.dose_diffOnChange.bind(this);
+    this.adjust_minmax_dosesOnChange = this.adjust_minmax_dosesOnChange.bind(this);
     var actionButtons = Array(2).fill({
         done: false,
         doing: false,
@@ -65,11 +66,14 @@ class Content extends React.Component {
       form: {
         onChange: this.onChange,
         dose_diffOnChange: this.dose_diffOnChange,
+        adjust_minmax_dosesOnChange: this.adjust_minmax_dosesOnChange,
         gamma: true,
         dose_diff: false,
         van_dyk: false,
         plan_resolution: 1,
         min_percentage: 0,
+        analysis: "absolute",
+        adjust_maximal_doses: true,
         maximum_dose_difference: 0,
         reference_distance_to_agreement: 1,
         distance_method: "gaussian",
@@ -361,6 +365,22 @@ class Content extends React.Component {
     if(!value){
       form.van_dyk = false;
     }
+    this.setState({
+      form:form
+    });
+  }
+
+  adjust_minmax_dosesOnChange(event, secondary){
+    const target = event.target;
+    const value = target.checked
+    const name = target.name;
+    const form = this.state.form;
+    if (!value) {
+      if (!form[secondary]) {
+        form[secondary] = true;
+      }
+    }
+    form[name] = value;
     this.setState({
       form:form
     });

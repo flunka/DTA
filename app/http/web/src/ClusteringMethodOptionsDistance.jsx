@@ -26,7 +26,7 @@ function ClusteringMethodOptionsDistance(props) {
           </Col>
           <Col sm="4">
             <Form.Control type="number" name="sugested_tolerance" 
-              min="0" max="1" step="0.1"
+              min="0" max="1" step="1"
               onChange={(e) => props.form.onChange(e)}
               value={props.form.sugested_tolerance} />
           </Col>
@@ -35,7 +35,7 @@ function ClusteringMethodOptionsDistance(props) {
           <Form.Label column sm="8">Low gradient tolerance [mm]</Form.Label>
           <Col sm="4">
             <Form.Control type="number" name="low_gradient_tolerance" 
-              min="0" max="99.999" step="0.01"
+              min="0" max="99.999" step="1"
               onChange={(e) => props.form.onChange(e)}
               value={props.form.low_gradient_tolerance} />
           </Col>
@@ -44,7 +44,7 @@ function ClusteringMethodOptionsDistance(props) {
           <Form.Label column sm="8">High gradient tolerance [mm]</Form.Label>
           <Col sm="4">
             <Form.Control type="number" name="high_gradient_tolerance" 
-              min="0" max="99.999" step="0.01" 
+              min="0" max="99.999" step="1" 
               onChange={(e) => props.form.onChange(e)}
               value={props.form.high_gradient_tolerance}/>
           </Col>
@@ -62,7 +62,7 @@ function ClusteringMethodOptionsDistance(props) {
           <Form.Label column sm="8">Blur of surrogates</Form.Label>
           <Col sm="4">
             <Form.Control type="number" name="blur_of_surrogates" 
-              min="0" max="5" step="0.01" 
+              min="0" max="5" step="1" 
               onChange={(e) => props.form.onChange(e)}
               value={props.form.blur_of_surrogates}/>
           </Col>

@@ -66,7 +66,7 @@ class CommonOptions extends React.Component {
               <Form.Label column sm="9">Do not accout for percentage of minimal values</Form.Label>
               <Col sm="3">
                 <Form.Control name="min_percentage" type="number" 
-                  min="0" step="0.1" max="30"
+                  min="0" step="1" max="30"
                   onChange={(e) => this.props.form.onChange(e)}
                   value={this.props.form.min_percentage}/>
               </Col>
@@ -97,13 +97,13 @@ class CommonOptions extends React.Component {
                 <Form.Check inline label="Adjust maximal doses" 
                   name="adjust_maximal_doses"
                   type='checkbox'
-                  onChange={(e) => this.props.form.onChange(e)}
-                  value={this.props.form.adjust_maximal_doses} />
+                  onChange={(e) => this.props.form.adjust_minmax_dosesOnChange(e, "adjust_minimal_doses")}
+                  checked={this.props.form.adjust_maximal_doses} />
                 <Form.Check inline label="Adjust minimal doses" 
                   name="adjust_minimal_doses"
                   type='checkbox'
-                  onChange={(e) => this.props.form.onChange(e)}
-                  value={this.props.form.adjust_minimal_doses} />
+                  onChange={(e) => this.props.form.adjust_minmax_dosesOnChange(e,"adjust_maximal_doses")}
+                  checked={this.props.form.adjust_minimal_doses} />
               </Row>
             }
           </Col>       

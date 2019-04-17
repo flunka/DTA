@@ -9,7 +9,7 @@ function PointWiseLocalMethodOptionsDose(props) {
         <Form.Label column sm="7">Maximal probability of type II error</Form.Label>
         <Col sm="5">
           <Form.Control type="number" name="max_probalility" 
-            min="0" max="0.99" step="0.01"
+            min="0" max="0.99" step="1"
             onChange={(e) => props.form.onChange(e)}
             value={props.form.max_probalility}/>
         </Col>
@@ -24,7 +24,7 @@ function PointWiseLocalMethodOptionsDose(props) {
               <Form.Label column sm="7">A</Form.Label>
               <Col sm="5">
                 <Form.Control type="number" name="coefficient_a"
-                  min="0" max="99.99" step="0.01"
+                  min="0" max="99.99" step="1"
                   onChange={(e) => props.form.onChange(e)}
                   value={props.form.coefficient_a} />
               </Col>

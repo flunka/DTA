@@ -30,7 +30,7 @@ function PointWiseLocalMethodOptionsDistance(props) {
             </Col>
             <Col sm="4">
               <Form.Control type="number" name="number_of_samples" 
-                min="0" max="99.999" step="0.01"
+                min="0" max="99.999" step="1"
                 onChange={(e) => props.form.onChange(e)}
                 value={props.form.number_of_samples} />
             </Col>
@@ -42,7 +42,7 @@ function PointWiseLocalMethodOptionsDistance(props) {
             <Form.Label column sm="8">Maximal probability PTH of type II error</Form.Label>
             <Col sm="4">
               <Form.Control type="number" name="max_probability_of_PTH_error" 
-                min="0" max="0.99" step="0.01"
+                min="0" max="0.99" step="1"
                 onChange={(e) => props.form.onChange(e)}
                 value={props.form.max_probability_of_PTH_error} />
             </Col>
@@ -51,7 +51,7 @@ function PointWiseLocalMethodOptionsDistance(props) {
             <Form.Label column sm="8">Log(1-PTH)</Form.Label>
             <Col sm="4">
               <Form.Control disabled type="number" name="log_PTH" 
-                max="0.99" step="0.01"
+                max="0.99" step="1"
                 onChange={(e) => props.form.onChange(e)}
                 value={props.form.log_PTH} />
             </Col>
@@ -60,7 +60,7 @@ function PointWiseLocalMethodOptionsDistance(props) {
             <Form.Label column sm="8">Blur of surrogates</Form.Label>
             <Col sm="4">
               <Form.Control type="number" name="blur_of_surrogates" 
-                min="0" max="0.99" step="0.01"
+                min="0" max="0.99" step="1"
                 onChange={(e) => props.form.onChange(e)}
                 value={props.form.blur_of_surrogates} />
             </Col>

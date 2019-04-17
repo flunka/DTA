@@ -23,7 +23,7 @@ function ClusteringMethodOptionsDose(props) {
             </Col>
             <Col sm="4">
               <Form.Control type="number" name="variance_explained" min="0" 
-                max="99.999" step="0.01"
+                max="99.999" step="1"
                 onChange={(e) => props.form.onChange(e)}
                 value={props.form.variance_explained} />
             </Col>
@@ -45,7 +45,7 @@ function ClusteringMethodOptionsDose(props) {
             <Form.Label column sm="8">Maximal probability of type II error</Form.Label>
             <Col sm="4">
               <Form.Control type="number" name="max_probability_of_error" 
-                min="0" max="0.99" step="0.01"
+                min="0" max="0.99" step="1"
                 onChange={(e) => props.form.onChange(e)}
                 value={props.form.max_probability_of_error} />
             </Col>
