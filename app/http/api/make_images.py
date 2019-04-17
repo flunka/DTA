@@ -309,6 +309,7 @@ def make_gamma_matrix(adjusted_applied, chosen_plan, min_percentage, reference_d
           if (max_delta > 0 and min_delta < 0):
             gamma[i, j] = 0
         if gamma[i, j] != 0:
+          frame = range(-int(reference_distance_tolerance[i, j]) - 1, int(reference_distance_tolerance[i, j]) + 2)
           for k in frame:
             for l in frame:
               if(k**2 + l**2 > reference_distance_tolerance[i, j]**2 and
