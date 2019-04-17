@@ -221,11 +221,11 @@ def make_van_dyk_matrix(dose_diff, DTA, reference_dose_tolerance, reference_dist
 
 
 @jit(nopython=True)
-def make_DTA_matrix(adjusted_applied, chosen_plan, reference_distance_to_agreement):
-  max_distance = 10 * int(reference_distance_to_agreement)
+def make_DTA_matrix(adjusted_applied, chosen_plan, plan_resolution):
+  max_distance = 10 * plan_resolution
   cols, rows = adjusted_applied.shape
   frame = range(-max_distance, max_distance + 1)
-  rdts_pow2 = reference_distance_to_agreement**2
+  rdts_pow2 = plan_resolution**2
 
   DTA = np.full_like(chosen_plan, 0)
 
@@ -385,7 +385,7 @@ def run(applied_plan, chosen_plan, options):
   if(options['dose_diff'] == 'on'):
     dose_diff = make_dose_diff_matrix(applied_plan, chosen_plan, options['min_percentage'], reference_dose_tolerance)
   if(options['van_dyk'] == 'on' and np.any(dose_diff)):
-    DTA_matrix = make_DTA_matrix(applied_plan, chosen_plan, options['reference_distance_to_agreement'])
+    DTA_matrix = make_DTA_matrix(applied_plan, chosen_plan, options['plan_resolution'])
     van_dyk = make_van_dyk_matrix(dose_diff, DTA_matrix, reference_dose_tolerance, reference_distance_tolerance)
 
   return (gamma, dose_diff, van_dyk)
