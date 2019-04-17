@@ -171,7 +171,9 @@ class Run(Resource):
     self.parser.add_argument('dose_diff', type=str)
     self.parser.add_argument('min_percentage', type=float)
     self.parser.add_argument('plan_resolution', type=float)
-    self.parser.add_argument('coefficient_a', type=float)
+    self.parser.add_argument('analysis', type=str)
+    self.parser.add_argument('adjust_maximal_doses', type=str)
+    self.parser.add_argument('adjust_minimal_doses', type=str)
     # Global
     self.parser.add_argument('maximum_dose_difference', type=float)
     self.parser.add_argument('reference_distance_to_agreement', type=float)
@@ -193,6 +195,7 @@ class Run(Resource):
     self.parser.add_argument('number_of_samples', type=float)
     self.parser.add_argument('max_probability_of_PTH_error', type=float)
     self.parser.add_argument('max_probability_of_PTH_error', type=float)
+    self.parser.add_argument('coefficient_a', type=float)
 
     ##Clustering and Piont-wise
     self.parser.add_argument('blur_of_surrogates', type=float)
