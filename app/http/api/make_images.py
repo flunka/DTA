@@ -225,7 +225,7 @@ def make_DTA_matrix(adjusted_applied, chosen_plan, plan_resolution):
   max_distance = 10 * plan_resolution
   cols, rows = adjusted_applied.shape
   frame = range(-max_distance, max_distance + 1)
-  rdts_pow2 = plan_resolution**2
+  resolution_pow2 = plan_resolution**2
 
   DTA = np.full_like(chosen_plan, 0)
 
@@ -247,23 +247,23 @@ def make_DTA_matrix(adjusted_applied, chosen_plan, plan_resolution):
             if DCX != DC:
               dx = (DM - DC) / (DCX - DC)
               if dx >= 0 and dx <= 1:
-                d1 = math.sqrt((k + dx)**2 * rdts_pow2 +
-                               l**2 * rdts_pow2)
+                d1 = math.sqrt((k + dx)**2 * resolution_pow2 +
+                               l**2 * resolution_pow2)
             if DCY != DC:
               dy = (DM - DC) / (DCY - DC)
               if dy >= 0 and dy <= 1:
-                d2 = math.sqrt(k**2 * rdts_pow2 +
-                               (l + dy)**2 * rdts_pow2)
+                d2 = math.sqrt(k**2 * resolution_pow2 +
+                               (l + dy)**2 * resolution_pow2)
             if DCX1 != DC:
               dx1 = (DM - DC) / (DCX1 - DC)
               if dx1 >= 0 and dx1 <= 1:
-                d3 = math.sqrt((k + dx1)**2 * rdts_pow2 +
-                               l**2 * rdts_pow2)
+                d3 = math.sqrt((k + dx1)**2 * resolution_pow2 +
+                               l**2 * resolution_pow2)
             if DCY1 != DC:
               dy1 = (DM - DC) / (DCY1 - DC)
               if dy1 >= 0 and dy1 <= 1:
-                d4 = math.sqrt(k**2 * rdts_pow2 +
-                               (l + dy)**2 * rdts_pow2)
+                d4 = math.sqrt(k**2 * resolution_pow2 +
+                               (l + dy)**2 * resolution_pow2)
             minimum_d = min(d1, d2, d3, d4)
             if(minimum_d < dmin):
               dmin = minimum_d
