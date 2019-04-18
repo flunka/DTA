@@ -8,7 +8,7 @@ function GlobalMethodOptionsDose(props) {
         <Form.Label column sm="9">Reference dose tolerance (% of maximal planned dose)</Form.Label>
         <Col sm="3">
           <Form.Control type="number" name="maximum_dose_difference"
-            min="0" max="20" step="1"
+            min="1" max="20" step="1"
             onChange={(e) => props.form.onChange(e)}
             value={props.form.maximum_dose_difference} />
         </Col>

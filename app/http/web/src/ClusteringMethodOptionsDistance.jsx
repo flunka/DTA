@@ -6,15 +6,7 @@ function ClusteringMethodOptionsDistance(props) {
   return (
     <Container className='m-0 p-0'>
       <Row noGutters className="ml-1">
-        <label>Clustering method</label>
-        <Form.Check type="radio" name="distance_method" value="gaussian" 
-          label="Gaussian mixture"
-          onChange={(e) => props.form.onChange(e)}
-          checked={props.form.distance_method === "gaussian"} />
-        <Form.Check type="radio" name="distance_method" value="k-menas" 
-          label="K-means clustering"
-          onChange={(e) => props.form.onChange(e)}
-          checked={props.form.distance_method === "k-menas"} />
+        <label>Clustering method: K-means clustering</label>
       </Row>
       <Row noGutters className="ml-1">
         <Form.Group as={Row} className='mw-100 w-100' noGutters >

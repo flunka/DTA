@@ -6,15 +6,7 @@ function ClusteringMethodOptionsDose(props) {
   return (
       <Container className='ml-1 p-0'>
         <Row noGutters>
-          <label>Clustering method</label>
-          <Form.Check type="radio" name="dose_method" value="gaussian" 
-            label="Gaussian mixture"
-            onChange={(e) => props.form.onChange(e)}
-            checked={props.form.dose_method === "gaussian"}/>
-          <Form.Check type="radio" name="dose_method" value="k-means" 
-            label="K-means clustering"
-            onChange={(e) => props.form.onChange(e)}
-            checked={props.form.dose_method === "k-means"}/>
+          <label>Clustering method: K-means clustering</label>
         </Row>
         <Row noGutters className='justify-content-end'>
           <Form.Group as={Row} className='mw-100 w-100'  noGutters>
@@ -32,13 +24,14 @@ function ClusteringMethodOptionsDose(props) {
             <Col sm="8">
               <Form.Check type="checkbox" label="Use manually set number of clusters" name="clusters_manually"
                 onChange={(e) => props.form.onChange(e)}
-                value={props.form.clusters_manually} />
+                checked={props.form.clusters_manually} />
             </Col>
             <Col sm="4">
               <Form.Control type="number" name="number_of_clusters" 
-                min="0" max="99"
+                min="1" max="99"
                 onChange={(e) => props.form.onChange(e)}
-                value={props.form.number_of_clusters}  />
+                value={props.form.number_of_clusters}
+                disabled={!props.form.clusters_manually}  />
             </Col>
           </Form.Group>
           <Form.Group as={Row} className='mw-100 w-100' noGutters>
