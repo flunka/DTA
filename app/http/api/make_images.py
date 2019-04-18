@@ -299,7 +299,7 @@ def make_alt_DTA_matrix(adjusted_applied, chosen_plan, reference_distance_tolera
           frame = range(-int(reference_distance_tolerance[i, j]) - 1, int(reference_distance_tolerance[i, j]) + 2)
           for k in frame:
             for l in frame:
-              if(k**2 + l**2 > reference_distance_tolerance[i, j] - 0.5 and
+              if(k**2 + l**2 > reference_distance_tolerance[i, j]**2 and
                  i + k >= 0 and i + k < cols and j + l >= 0 and j + l < rows):
                 delta = adjusted_applied[i, j] - chosen_plan[i + k, j + l]
                 second_frame_size = 2
