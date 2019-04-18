@@ -234,36 +234,36 @@ def make_DTA_matrix(adjusted_applied, chosen_plan, plan_resolution):
       dmin = max_distance
       DM = adjusted_applied[i, j]
 
-      for l in frame:
-        for k in frame:
+      for k in frame:
+        for l in frame:
           if (i + k >= 1 and i + k < cols - 1 and j + l >= 1 and j + l < rows - 1):
             DC = chosen_plan[i + k, j + l]
-            DCX = chosen_plan[i + k + 1, j + l]
-            DCY = chosen_plan[i + k, j + l + 1]
-            DCX1 = chosen_plan[i + k - 1, j + l]
-            DCY1 = chosen_plan[i + k, j + l - 1]
+            DCX = chosen_plan[i + k, j + l + 1]
+            DCY = chosen_plan[i + k + 1, j + l]
+            DCX1 = chosen_plan[i + k, j + l - 1]
+            DCY1 = chosen_plan[i + k - 1, j + l]
 
             dx = dy = dx1 = dy1 = d1 = d2 = d3 = d4 = max_distance
             if DCX != DC:
               dx = (DM - DC) / (DCX - DC)
               if dx >= 0 and dx <= 1:
-                d1 = math.sqrt((k + dx)**2 * resolution_pow2 +
-                               l**2 * resolution_pow2)
+                d1 = math.sqrt((l + dx)**2 * resolution_pow2 +
+                               k**2 * resolution_pow2)
             if DCY != DC:
               dy = (DM - DC) / (DCY - DC)
               if dy >= 0 and dy <= 1:
-                d2 = math.sqrt(k**2 * resolution_pow2 +
-                               (l + dy)**2 * resolution_pow2)
+                d2 = math.sqrt(l**2 * resolution_pow2 +
+                               (k + dy)**2 * resolution_pow2)
             if DCX1 != DC:
               dx1 = (DM - DC) / (DCX1 - DC)
               if dx1 >= 0 and dx1 <= 1:
-                d3 = math.sqrt((k + dx1)**2 * resolution_pow2 +
-                               l**2 * resolution_pow2)
+                d3 = math.sqrt((l + dx1)**2 * resolution_pow2 +
+                               k**2 * resolution_pow2)
             if DCY1 != DC:
               dy1 = (DM - DC) / (DCY1 - DC)
               if dy1 >= 0 and dy1 <= 1:
-                d4 = math.sqrt(k**2 * resolution_pow2 +
-                               (l + dy)**2 * resolution_pow2)
+                d4 = math.sqrt(l**2 * resolution_pow2 +
+                               (k + dy)**2 * resolution_pow2)
             minimum_d = min(d1, d2, d3, d4)
             if(minimum_d < dmin):
               dmin = minimum_d
