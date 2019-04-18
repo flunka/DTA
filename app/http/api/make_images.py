@@ -422,18 +422,27 @@ def create_reference_dose_tolerance(chosen_plan, method, options):
 
 def adjust_maximal_doses(applied_dose, chosen_plan):
   max_applied_value = np.amax(applied_dose)
+  min_applied_value = np.amin(applied_dose)
   max_planned_value = np.amax(chosen_plan)
-  return np.where(applied_dose == max_applied_value,
-                  max_planned_value,
-                  applied_dose)
+  return (max_planned_value - min_applied_value) * (applied_dose - min_applied_value) / \
+      (max_applied_value - min_applied_value) + min_applied_value
 
 
 def adjust_minimal_doses(applied_dose, chosen_plan):
   min_applied_value = np.amin(applied_dose)
+  max_applied_value = np.amax(applied_dose)
   min_planned_value = np.amin(chosen_plan)
-  return np.where(applied_dose == min_applied_value,
-                  min_planned_value,
-                  applied_dose)
+  return (max_applied_value - min_planned_value) * (applied_dose - min_applied_value) / \
+      (max_applied_value - min_applied_value) + min_planned_value
+
+
+def adjust_min_and_min_doses(applied_dose, chosen_plan):
+  min_applied_value = np.amin(applied_dose)
+  max_applied_value = np.amax(applied_dose)
+  min_planned_value = np.amin(chosen_plan)
+  max_planned_value = np.amin(chosen_plan)
+  return (max_planned_value - min_planned_value) * (applied_dose - min_applied_value) / \
+      (max_applied_value - min_applied_value) + min_planned_value
 
 
 def run(applied_dose, chosen_plan, options):
@@ -447,8 +456,11 @@ def run(applied_dose, chosen_plan, options):
   before = applied_dose
   if options['analysis'] == 'relative':
     if options['adjust_maximal_doses']:
-      applied_dose = adjust_maximal_doses(applied_dose, chosen_plan)
-    if options['adjust_minimal_doses']:
+      if options['adjust_minimal_doses']:
+        applied_dose = adjust_min_and_min_doses(applied_dose, chosen_plan)
+      else:
+        applied_dose = adjust_maximal_doses(applied_dose, chosen_plan)
+    elif options['adjust_minimal_doses']:
       applied_dose = adjust_minimal_doses(applied_dose, chosen_plan)
   print(np.array_equal(before, applied_dose))
   if(options['gamma'] == 'on'):
