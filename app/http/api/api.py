@@ -178,7 +178,6 @@ class Run(Resource):
     self.parser.add_argument('maximum_dose_difference', type=float)
     self.parser.add_argument('reference_distance_to_agreement', type=float)
     # Clstering
-    self.parser.add_argument('dose_method', type=str)
     self.parser.add_argument('variance_explained', type=float)
     self.parser.add_argument('clusters_manually', type=str)
     self.parser.add_argument('number_of_clusters', type=int)
@@ -196,10 +195,10 @@ class Run(Resource):
     self.parser.add_argument('max_probability_of_PTH_error', type=float)
     self.parser.add_argument('max_probability_of_PTH_error', type=float)
     self.parser.add_argument('coefficient_a', type=float)
+    self.parser.add_argument('distance_local_method', type=str)
 
     ##Clustering and Piont-wise
     self.parser.add_argument('blur_of_surrogates', type=float)
-    self.parser.add_argument('distance_method', type=str)
 
   def post(self):
     args = self.parser.parse_args()
@@ -214,7 +213,8 @@ class Run(Resource):
       chosen_dose = create_dose(aligned_path)
     else:
       return abort(403, error_message='Invalid chosen plan!')
-    gamma, dose_diff, van_dyk = make_images.run(applied_dose.doses, chosen_dose.doses, args)
+    gamma, dose_diff, van_dyk, reference_dose_tolerance, reference_distance_tolerance = \
+        make_images.run(applied_dose.doses, chosen_dose.doses, args)
     gamma_url = dose_diff_url = van_dyk_url = ""
     result = {'gamma': gamma_url, 'dose_diff': dose_diff_url, 'van_dyk': van_dyk_url}
     if(np.any(gamma)):
@@ -236,6 +236,13 @@ class Run(Resource):
       result["van_dyk"] = "".join(('/upload/', session['id'], '/van_dyk/van_dyk.jpg'))
       result["van_dyk_passing_rate"] = round((1 - np.count_nonzero(van_dyk) / van_dyk.size) * 100, 2)
 
+    # Start of temporary code
+    reference_dose_tolerance_path = get_path('reference_dose_tolerance')
+    make_images.make_image(reference_dose_tolerance, "".join((reference_dose_tolerance_path, 'reference_dose_tolerance')))
+    result["reference_dose_tolerance"] = "".join(('/upload/', session['id'], '/reference_dose_tolerance/reference_dose_tolerance.jpg'))
+    reference_distance_tolerance_path = get_path('reference_distance_tolerance')
+    make_images.make_image(reference_distance_tolerance, "".join((reference_distance_tolerance_path, 'reference_distance_tolerance')))
+    result["reference_distance_tolerance"] = "".join(('/upload/', session['id'], '/reference_distance_tolerance/reference_distance_tolerance.jpg'))
     return result
 
 

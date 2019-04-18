@@ -4,6 +4,7 @@ import nrrd
 import math
 import numba
 from numba import jit
+from sklearn.cluster import KMeans
 
 
 class Dose(object):
@@ -390,6 +391,26 @@ def make_global_reference_dose_tolerance(plan, max_dose_diff):
   return np.full_like(plan, init_dose_tolerance)
 
 
+def make_clustering_reference_distance_tolerance(chosen_plan):
+  gradient = np.gradient(chosen_plan)
+  gradient_amplitude = np.sqrt(gradient[0]**2 + gradient[1]**2)
+  kmeans = KMeans(n_clusters=2)
+  cols, rows = gradient_amplitude.shape
+  means = kmeans.fit(gradient_amplitude.reshape(gradient_amplitude.size, 1))
+  cluster_centers = means.cluster_centers_
+  cluster_labels = means.labels_
+  return cluster_centers[cluster_labels].reshape(cols, rows)
+
+
+def make_clustering_reference_dose_tolerance(chosen_plan, number_of_clusters):
+  kmeans = KMeans(n_clusters=number_of_clusters)
+  cols, rows = chosen_plan.shape
+  means = kmeans.fit(chosen_plan.reshape(chosen_plan.size, 1))
+  cluster_centers = means.cluster_centers_
+  cluster_labels = means.labels_
+  return cluster_centers[cluster_labels].reshape(cols, rows)
+
+
 def create_reference_distance_tolerance(chosen_plan, method, options):
   reference_distance_tolerance = None
   if method == 'global':
@@ -397,7 +418,8 @@ def create_reference_distance_tolerance(chosen_plan, method, options):
         make_global_reference_distance_tolerance(chosen_plan,
                                                  options['reference_distance_to_agreement'])
   elif method == 'clustering':
-    pass
+    reference_distance_tolerance = \
+        make_clustering_reference_distance_tolerance(chosen_plan)
   elif method == 'local':
     pass
   else:
@@ -412,7 +434,12 @@ def create_reference_dose_tolerance(chosen_plan, method, options):
         make_global_reference_dose_tolerance(chosen_plan,
                                              options['maximum_dose_difference'])
   elif method == 'clustering':
-    pass
+    if options['clusters_manually']:
+      number_of_clusters = options['number_of_clusters']
+    else:
+      number_of_clusters = 3
+    reference_dose_tolerance = \
+        make_clustering_reference_dose_tolerance(chosen_plan, number_of_clusters)
   elif method == 'local':
     pass
   else:
@@ -469,5 +496,4 @@ def run(applied_dose, chosen_plan, options):
     # DTA_matrix = make_DTA_matrix(applied_dose, chosen_plan, options['plan_resolution'])
     DTA_matrix = make_alt_DTA_matrix(applied_dose, chosen_plan, reference_distance_tolerance, options['min_percentage'])
     van_dyk = make_van_dyk_matrix(dose_diff, DTA_matrix, reference_dose_tolerance, reference_distance_tolerance)
-
-  return (gamma, dose_diff, van_dyk)
+  return (gamma, dose_diff, van_dyk, reference_dose_tolerance, reference_distance_tolerance)
