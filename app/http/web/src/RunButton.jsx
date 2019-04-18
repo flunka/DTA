@@ -35,6 +35,10 @@ class RunButton extends React.Component {
       )
   };
 
+  onHide(){
+    this.setState({show:false})
+  }
+
   render(){   
     return(
       <div>
@@ -49,6 +53,8 @@ class RunButton extends React.Component {
           show={this.state.show}
           target={this.state.target}
           placement="right"
+          rootClose={true}
+          onHide={() => this.onHide()}
           container={this}
         >
           {this.renderPopover()}
