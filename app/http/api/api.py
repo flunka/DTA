@@ -206,7 +206,6 @@ class Run(Resource):
     applied_path = get_path('adjusted_applied')
     applied_dose = create_dose(applied_path)
     chosen_dose = None
-    print(args['plan'])
     if(args['plan'] == "adjusted"):
       adjusted_path = get_path('adjusted_planned')
       chosen_dose = create_dose(adjusted_path)
@@ -217,28 +216,27 @@ class Run(Resource):
       return abort(403, error_message='Invalid chosen plan!')
     gamma, dose_diff, van_dyk = make_images.run(applied_dose.doses, chosen_dose.doses, args)
     gamma_url = dose_diff_url = van_dyk_url = ""
+    result = {'gamma': gamma_url, 'dose_diff': dose_diff_url, 'van_dyk': van_dyk_url}
     if(np.any(gamma)):
       gamma_path = "".join((get_path('gamma'), 'gamma'))
       make_images.make_image(gamma, gamma_path, 2)
       make_images.make_nrrd(gamma, gamma_path)
-      gamma_url = "".join(('/upload/', session['id'], '/gamma/gamma.jpg'))
-      gamma_passing_rate = round((1 - np.count_nonzero(gamma) / gamma.size) * 100, 2)
+      result["gamma"] = "".join(('/upload/', session['id'], '/gamma/gamma.jpg'))
+      result["gamma_passing_rate"] = round((1 - np.count_nonzero(gamma) / gamma.size) * 100, 2)
     if(np.any(dose_diff) != None):
       dose_diff_path = "".join((get_path('dose_diff'), 'dose_diff'))
       make_images.make_image(dose_diff, dose_diff_path, 2)
       make_images.make_nrrd(dose_diff, dose_diff_path)
-      dose_diff_url = "".join(('/upload/', session['id'], '/dose_diff/dose_diff.jpg'))
-      dose_diff_passing_rate = round((1 - np.count_nonzero(dose_diff) / dose_diff.size) * 100, 2)
+      result["dose_diff"] = "".join(('/upload/', session['id'], '/dose_diff/dose_diff.jpg'))
+      result["dose_diff_passing_rate"] = round((1 - np.count_nonzero(dose_diff) / dose_diff.size) * 100, 2)
     if(np.any(van_dyk) != None):
       van_dyk_path = "".join((get_path('van_dyk'), 'van_dyk'))
       make_images.make_image(van_dyk, van_dyk_path, 2)
       make_images.make_nrrd(van_dyk, van_dyk_path)
-      van_dyk_url = "".join(('/upload/', session['id'], '/van_dyk/van_dyk.jpg'))
-      van_dyk_passing_rate = round((1 - np.count_nonzero(van_dyk) / van_dyk.size) * 100, 2)
+      result["van_dyk"] = "".join(('/upload/', session['id'], '/van_dyk/van_dyk.jpg'))
+      result["van_dyk_passing_rate"] = round((1 - np.count_nonzero(van_dyk) / van_dyk.size) * 100, 2)
 
-    return {'gamma': gamma_url, 'dose_diff': dose_diff_url, 'van_dyk': van_dyk_url,
-            'gamma_passing_rate': gamma_passing_rate, 'dose_diff_passing_rate': dose_diff_passing_rate,
-            'van_dyk_passing_rate': van_dyk_passing_rate}
+    return result
 
 
 api.add_resource(DTA, '/', '/DTA')

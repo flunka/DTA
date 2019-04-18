@@ -453,7 +453,6 @@ def run(applied_dose, chosen_plan, options):
   reference_dose_tolerance = \
       create_reference_dose_tolerance(chosen_plan,
                                       options['DQA_method'], options)
-  before = applied_dose
   if options['analysis'] == 'relative':
     if options['adjust_maximal_doses']:
       if options['adjust_minimal_doses']:
@@ -462,7 +461,6 @@ def run(applied_dose, chosen_plan, options):
         applied_dose = adjust_maximal_doses(applied_dose, chosen_plan)
     elif options['adjust_minimal_doses']:
       applied_dose = adjust_minimal_doses(applied_dose, chosen_plan)
-  print(np.array_equal(before, applied_dose))
   if(options['gamma'] == 'on'):
     gamma = make_gamma_matrix(applied_dose, chosen_plan, options['min_percentage'], reference_distance_tolerance, reference_dose_tolerance)
   if(options['dose_diff'] == 'on'):
