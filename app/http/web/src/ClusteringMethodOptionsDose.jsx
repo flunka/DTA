@@ -9,40 +9,27 @@ function ClusteringMethodOptionsDose(props) {
           <label>Clustering method: K-means clustering</label>
         </Row>
         <Row noGutters className='justify-content-end'>
-          <Form.Group as={Row} className='mw-100 w-100'  noGutters>
-            <Col sm="8">
-            <Form.Label>% of variance explained</Form.Label>
-            </Col>
-            <Col sm="4">
-              <Form.Control type="number" name="variance_explained" min="0" 
-                max="99.999" step="1"
-                onChange={(e) => props.form.onChange(e)}
-                value={props.form.variance_explained} />
-            </Col>
-          </Form.Group>
           <Form.Group as={Row} className='mw-100 w-100' noGutters>
-            <Col sm="8">
-              <Form.Check type="checkbox" label="Use manually set number of clusters" name="clusters_manually"
-                onChange={(e) => props.form.onChange(e)}
-                checked={props.form.clusters_manually} />
-            </Col>
+            <Form.Label column sm="8">Number of clusters</Form.Label>
             <Col sm="4">
               <Form.Control type="number" name="number_of_clusters" 
-                min="1" max="99"
-                onChange={(e) => props.form.onChange(e)}
-                value={props.form.number_of_clusters}
-                disabled={!props.form.clusters_manually}  />
+                min="1" max="6"
+                onChange={(e) => props.form.number_of_clustersOnChange(e)}
+                value={props.form.number_of_clusters} />
             </Col>
           </Form.Group>
-          <Form.Group as={Row} className='mw-100 w-100' noGutters>
-            <Form.Label column sm="8">Maximal probability of type II error</Form.Label>
+          {props.form.clustering_dose_tolerance.map((clustering_dose_tolerance, idx) => (
+          <Form.Group as={Row} className='mw-100 w-100' noGutters key={idx}>
+            <Form.Label column sm="8">Tolerance for cluster number {idx+1}</Form.Label>
             <Col sm="4">
-              <Form.Control type="number" name="max_probability_of_error" 
-                min="0" max="0.99" step="1"
-                onChange={(e) => props.form.onChange(e)}
-                value={props.form.max_probability_of_error} />
+              <Form.Control type="number" name={"clustering_dose_tolerance_" + idx}
+                  min="1" max="100"
+                  onChange={(e) => props.form.clustering_dose_toleranceOnChange(e,idx)}
+                  value={clustering_dose_tolerance.value}
+                  />
             </Col>
           </Form.Group>
+        ))}
         </Row>
       </Container>
       

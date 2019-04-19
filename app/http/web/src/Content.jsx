@@ -26,6 +26,8 @@ class Content extends React.Component {
     this.onChange = this.onChange.bind(this);
     this.dose_diffOnChange = this.dose_diffOnChange.bind(this);
     this.adjust_minmax_dosesOnChange = this.adjust_minmax_dosesOnChange.bind(this);
+    this.number_of_clustersOnChange = this.number_of_clustersOnChange.bind(this);
+    this.clustering_dose_toleranceOnChange = this.clustering_dose_toleranceOnChange.bind(this);
     var actionButtons = Array(2).fill({
         done: false,
         doing: false,
@@ -67,6 +69,8 @@ class Content extends React.Component {
         onChange: this.onChange,
         dose_diffOnChange: this.dose_diffOnChange,
         adjust_minmax_dosesOnChange: this.adjust_minmax_dosesOnChange,
+        number_of_clustersOnChange: this.number_of_clustersOnChange,
+        clustering_dose_toleranceOnChange: this.clustering_dose_toleranceOnChange,
         gamma: true,
         dose_diff: false,
         van_dyk: false,
@@ -76,16 +80,10 @@ class Content extends React.Component {
         adjust_maximal_doses: true,
         maximum_dose_difference: 1,
         reference_distance_to_agreement: 1,
-        is_sugested: false,
-        sugested_tolerance: 0,
-        low_gradient_tolerance: 0,
-        high_gradient_tolerance: 0,
-        number_of_surrogates: 0,
-        blur_of_surrogates: 0,
-        variance_explained: 0,
-        clusters_manually: true,
+        low_gradient_tolerance: 1,
+        high_gradient_tolerance: 1,
         number_of_clusters: 1,
-        max_probability_of_error: 0,
+        clustering_dose_tolerance: [{value: 1}],
         distance_local_method: "DTA6",
         surrogates: false,
         number_of_samples: 0,
@@ -384,6 +382,41 @@ class Content extends React.Component {
     this.setState({
       form:form
     });
+  }
+
+  number_of_clustersOnChange(event){
+    this.onChange(event);
+    var clustering_dose_tolerance = this.state.form.clustering_dose_tolerance
+    var value = event.target.value
+    if(value > 6){
+      value = 6
+    }
+    const delta = value - clustering_dose_tolerance.length
+    if(delta > 0){
+      for (var i = delta - 1; i >= 0; i--) {
+        clustering_dose_tolerance = clustering_dose_tolerance.concat([{value: 1}]);
+      }
+    }
+    else {
+      if (delta < 0) {
+        clustering_dose_tolerance.splice(-1,-delta);
+      }
+    }
+    const form = this.state.form;
+    form.clustering_dose_tolerance = clustering_dose_tolerance;
+    this.setState({
+      form: form
+    });
+  }
+
+  clustering_dose_toleranceOnChange(event, idx){
+    const new_clustering_dose_tolerance = this.state.form.clustering_dose_tolerance.map((clustering_dose_tolerance, sidx) => {
+      if (idx !== sidx) return clustering_dose_tolerance;
+      return { ...clustering_dose_tolerance, value: event.target.value };
+    });
+    const form = this.state.form;
+    form.clustering_dose_tolerance = new_clustering_dose_tolerance;
+    this.setState({ form: form });
   }
  
 
