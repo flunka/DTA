@@ -178,15 +178,11 @@ class Run(Resource):
     self.parser.add_argument('maximum_dose_difference', type=float)
     self.parser.add_argument('reference_distance_to_agreement', type=float)
     # Clstering
-    self.parser.add_argument('variance_explained', type=float)
-    self.parser.add_argument('clusters_manually', type=str)
     self.parser.add_argument('number_of_clusters', type=int)
-    self.parser.add_argument('max_probability_of_error', type=float)
-    self.parser.add_argument('is_sugested', type=str)
-    self.parser.add_argument('sugested_tolerance', type=float)
-    self.parser.add_argument('low_gradient_tolerance', type=float)
-    self.parser.add_argument('high_gradient_tolerance', type=float)
-    self.parser.add_argument('number_of_surrogates', type=int)
+    for x in range(0, 7):
+      self.parser.add_argument('clustering_dose_tolerance_{}'.format(x), type=int)
+    self.parser.add_argument('low_gradient_tolerance', type=int)
+    self.parser.add_argument('high_gradient_tolerance', type=int)
 
     # Point-wise local
     self.parser.add_argument('max_probalility', type=float)
@@ -217,7 +213,8 @@ class Run(Resource):
         make_images.run(applied_dose.doses, chosen_dose.doses, args)
     gamma_url = dose_diff_url = van_dyk_url = ""
     result = {'gamma': gamma_url, 'dose_diff': dose_diff_url, 'van_dyk': van_dyk_url}
-    if(np.any(gamma)):
+    print(np.any(gamma))
+    if(np.any(gamma) != None):
       gamma_path = "".join((get_path('gamma'), 'gamma'))
       make_images.make_image(gamma, gamma_path, 2)
       make_images.make_nrrd(gamma, gamma_path)
