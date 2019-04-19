@@ -412,7 +412,7 @@ class Content extends React.Component {
   clustering_dose_toleranceOnChange(event, idx){
     const new_clustering_dose_tolerance = this.state.form.clustering_dose_tolerance.map((clustering_dose_tolerance, sidx) => {
       if (idx !== sidx) return clustering_dose_tolerance;
-      return { ...clustering_dose_tolerance, value: event.target.value };
+      return { clustering_dose_tolerance: {value: event.target.value} };
     });
     const form = this.state.form;
     form.clustering_dose_tolerance = new_clustering_dose_tolerance;
