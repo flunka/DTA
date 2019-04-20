@@ -236,9 +236,11 @@ class Run(Resource):
     # Start of temporary code
     reference_dose_tolerance_path = get_path('reference_dose_tolerance')
     make_images.make_image(reference_dose_tolerance, "".join((reference_dose_tolerance_path, 'reference_dose_tolerance')))
+    make_images.make_nrrd(reference_dose_tolerance, "".join((reference_dose_tolerance_path, 'reference_dose_tolerance')))
     result["reference_dose_tolerance"] = "".join(('/upload/', session['id'], '/reference_dose_tolerance/reference_dose_tolerance.jpg'))
     reference_distance_tolerance_path = get_path('reference_distance_tolerance')
     make_images.make_image(reference_distance_tolerance, "".join((reference_distance_tolerance_path, 'reference_distance_tolerance')))
+    make_images.make_nrrd(reference_distance_tolerance, "".join((reference_distance_tolerance_path, 'reference_distance_tolerance')))
     result["reference_distance_tolerance"] = "".join(('/upload/', session['id'], '/reference_distance_tolerance/reference_distance_tolerance.jpg'))
     return result
 
