@@ -5,6 +5,7 @@ import math
 import numba
 from numba import jit
 from sklearn.cluster import KMeans
+import pydicom
 
 
 class Dose(object):
@@ -24,6 +25,26 @@ class Dose(object):
 
 
 def make_applied_dose_image(file_name, path):
+  file_extension = file_name.split(".")[-1]
+  if file_extension == "dcm":
+    make_dose_image_from_DICOM(file_name, path, "applied")
+  elif file_extension == "txt" or file_extension == "snc":
+    make_applied_dose_image_from_ArcCheck(file_name, path)
+  else:
+    raise ValueError("Wrong type of file")
+
+
+def make_dose_image_from_DICOM(file_name, path, type_of_image):
+  file = "".join((path, file_name))
+  data = pydicom.dcmread(file)
+  doses = data.pixel_array
+  save_data(path, None, None, doses)
+  # Create image
+  make_image(doses, "".join((path, type_of_image)), 2)
+  make_nrrd(doses, "".join((path, type_of_image)))
+
+
+def make_applied_dose_image_from_ArcCheck(file_name, path):
   file = "".join((path, file_name))
   with open(file) as f:
     data = []
@@ -63,6 +84,16 @@ def make_applied_dose_image(file_name, path):
 
 
 def make_planned_dose_image(file_name, path):
+  file_extension = file_name.split(".")[-1]
+  if file_extension == "dcm":
+    make_dose_image_from_DICOM(file_name, path, "planned")
+  elif file_extension == "txt" or file_extension == "snc":
+    make_planned_dose_image_from_ArcCheck(file_name, path)
+  else:
+    raise ValueError("Wrong type of file")
+
+
+def make_planned_dose_image_from_ArcCheck(file_name, path):
   file = "".join((path, file_name))
   with open(file) as f:
     data = []
@@ -135,13 +166,18 @@ def get_first_and_last_matching_index(planned, applied):
 def adjust_doses(planned_dose, applied_dose, path):
   planned_path = "".join((path, "_planned/"))
   applied_path = "".join((path, "_applied/"))
-  firstX, lastX = get_first_and_last_matching_index(planned_dose.x, applied_dose.x)
-  firstY, lastY = get_first_and_last_matching_index(planned_dose.y, applied_dose.y)
-  adjusted_planned_dose = Dose(
-      x=planned_dose.x[firstX:lastX + 1],
-      y=planned_dose.y[firstY:lastY + 1],
-      doses=planned_dose.doses[firstY:lastY + 1, firstX:lastX + 1]
-  )
+  if(np.any(planned_dose.x) != None):
+    firstX, lastX = get_first_and_last_matching_index(planned_dose.x, applied_dose.x)
+    firstY, lastY = get_first_and_last_matching_index(planned_dose.y, applied_dose.y)
+    adjusted_planned_dose = Dose(
+        x=planned_dose.x[firstX:lastX + 1],
+        y=planned_dose.y[firstY:lastY + 1],
+        doses=planned_dose.doses[firstY:lastY + 1, firstX:lastX + 1]
+    )
+  else:
+    scale = applied_dose.doses.shape[0] / planned_dose.doses.shape[0]
+    adjusted_planned_dose = Dose(x=None, y=None,
+                                 doses=resize_doses(-planned_dose.doses, scale))
 
   save_data(planned_path,
             adjusted_planned_dose.x,
@@ -149,12 +185,15 @@ def adjust_doses(planned_dose, applied_dose, path):
             adjusted_planned_dose.doses)
   make_image(adjusted_planned_dose.doses, "".join((planned_path, "adjusted_planned")), 2)
   make_nrrd(adjusted_planned_dose.doses, "".join((planned_path, "adjusted_planned")))
-  # Adjusting applied doses
-  # Resize dose to desired size
-  scale = 5
-  additional_pixels = int(scale / 2)
-  adjusted_applied_doses = \
-      resize_doses(applied_dose.doses, scale)[additional_pixels:(0 - additional_pixels), additional_pixels:(0 - additional_pixels)]
+  if(np.any(planned_dose.x) != None):
+    # Adjusting applied doses
+    # Resize dose to desired size
+    scale = 5
+    additional_pixels = int(scale / 2)
+    adjusted_applied_doses = \
+        resize_doses(applied_dose.doses, scale)[additional_pixels:(0 - additional_pixels), additional_pixels:(0 - additional_pixels)]
+  else:
+    adjusted_applied_doses = applied_dose.doses
   # # save to file
   save_data(applied_path,
             applied_dose.x,
@@ -423,7 +462,7 @@ def make_clustering_reference_dose_tolerance(chosen_plan, number_of_clusters, li
   cluster_labels = means.labels_
   order = order_idexes(cluster_centers)
   for x, y in zip(range(0, number_of_clusters), order):
-    cluster_centers[x][0] *= list_of_tolerances[y]/100
+    cluster_centers[x][0] *= list_of_tolerances[y] / 100
   return cluster_centers[cluster_labels].reshape(cols, rows)
 
 

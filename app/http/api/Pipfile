@@ -12,6 +12,7 @@ uwsgi = "*"
 pynrrd = "*"
 numba = "*"
 sklearn = "*"
+pydicom = "*"
 
 [dev-packages]
 
