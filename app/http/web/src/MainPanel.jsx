@@ -40,8 +40,7 @@ class MainPanel extends React.Component {
                 <ClusteringMethodOptionsDose
                   form={this.props.form} />}
               { this.props.sidebar[0].methodToRender === 'local' && 
-                <PointWiseLocalMethodOptionsDose
-                  form={this.props.form} />}
+                <div />}
             </Col>
             <Col>
             <Alert variant='dark' className='m-0 p-0 text-center'>Distance to agreement assessment</Alert>
@@ -52,8 +51,7 @@ class MainPanel extends React.Component {
                 <ClusteringMethodOptionsDistance 
                   form={this.props.form}/>}
               { this.props.sidebar[1].methodToRender === 'local' && 
-                <PointWiseLocalMethodOptionsDistance 
-                  form={this.props.form}/>}
+                <div/>}
             </Col>
           </Row>
       </Col>
