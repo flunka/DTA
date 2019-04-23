@@ -7,13 +7,14 @@ from flask_restful import Resource, Api, reqparse, abort
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 import numpy as np
+import cv2 as cv
 
 import time
 
 import make_images
 
 UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER') or './static/upload'
-ALLOWED_EXTENSIONS = set(['txt', 'snc'])
+ALLOWED_EXTENSIONS = set(['txt', 'snc', 'dcm'])
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -72,11 +73,17 @@ class GetImage(Resource):
     args = self.parser.parse_args()
     if args['type']:
       file = '/{0}/{0}.jpg'.format(args['type'])
+      path = get_path(args['type'])
+      img = cv.imread("".join((path, "/{}.jpg".format(args['type']))))
     else:
       return abort(403, error_message='No type of image')
     if 'id' in session:
       url = "".join(('/upload/', session['id'], file))
-      return {'image': url}
+      rows = img.shape[0]
+      cols = img.shape[1]
+      return {'image': url,
+              'width': cols,
+              'heigth': rows}
     else:
       return abort(403, error_message='No session id')
 
