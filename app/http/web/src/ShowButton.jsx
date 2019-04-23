@@ -12,7 +12,8 @@ class ShowButon extends React.Component {
       url: "",
       show: false,
       x: 0,
-      y: 0
+      y: 0,
+      width: 650
     };
 
     this.get_image = this.get_image.bind(this);
@@ -28,6 +29,8 @@ class ShowButon extends React.Component {
       success => (
           this.setState({
             url: success.image + '?' + Date.now(),
+            width: success.width,
+            height: success.height,
             show: !this.state.show
           })
         )
@@ -45,10 +48,10 @@ class ShowButon extends React.Component {
           default={{
             x: this.state.x,
             y: this.state.y,
-            width: 650,
+            width: this.state.width/2,
           }}
-          minWidth={250}
-          maxWidth={1200}
+          minWidth={this.state.width/4}
+          maxWidth={this.state.width}
           lockAspectRatio={true}
           enableResizing={resizing}
           onDragStop={(e, data) => {
