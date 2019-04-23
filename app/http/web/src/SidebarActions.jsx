@@ -38,7 +38,7 @@ class SidebarActions extends React.Component {
                 handleSelectedFile={this.props.handleSelectedFile}/>
             }
             {this.props.results.status === "process" &&
-              <div>Request Processing</div>
+              <div></div>
             }
             {this.props.results.status === "after" &&
               <ActionsAfter
