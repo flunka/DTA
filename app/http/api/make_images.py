@@ -177,13 +177,13 @@ def adjust_doses(planned_dose, applied_dose, path):
   else:
     scale = applied_dose.doses.shape[0] / planned_dose.doses.shape[0]
     adjusted_planned_dose = Dose(x=None, y=None,
-                                 doses=resize_doses(-planned_dose.doses, scale))
+                                 doses=resize_doses(planned_dose.doses, scale))
 
   save_data(planned_path,
             adjusted_planned_dose.x,
             adjusted_planned_dose.y,
             adjusted_planned_dose.doses)
-  make_image(adjusted_planned_dose.doses, "".join((planned_path, "adjusted_planned")), 2)
+  make_image(-adjusted_planned_dose.doses, "".join((planned_path, "adjusted_planned")), 2)
   make_nrrd(adjusted_planned_dose.doses, "".join((planned_path, "adjusted_planned")))
   if(np.any(planned_dose.x) != None):
     # Adjusting applied doses
