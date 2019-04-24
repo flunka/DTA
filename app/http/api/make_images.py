@@ -175,15 +175,14 @@ def adjust_doses(planned_dose, applied_dose, path):
         doses=planned_dose.doses[firstY:lastY + 1, firstX:lastX + 1]
     )
   else:
-    scale = applied_dose.doses.shape[0] / planned_dose.doses.shape[0]
     adjusted_planned_dose = Dose(x=None, y=None,
-                                 doses=resize_doses(planned_dose.doses, scale))
+                                 doses=planned_dose.doses)
 
   save_data(planned_path,
             adjusted_planned_dose.x,
             adjusted_planned_dose.y,
             adjusted_planned_dose.doses)
-  make_image(-adjusted_planned_dose.doses, "".join((planned_path, "adjusted_planned")), 2)
+  make_image(adjusted_planned_dose.doses, "".join((planned_path, "adjusted_planned")), 2)
   make_nrrd(adjusted_planned_dose.doses, "".join((planned_path, "adjusted_planned")))
   if(np.any(planned_dose.x) != None):
     # Adjusting applied doses
@@ -193,7 +192,9 @@ def adjust_doses(planned_dose, applied_dose, path):
     adjusted_applied_doses = \
         resize_doses(applied_dose.doses, scale)[additional_pixels:(0 - additional_pixels), additional_pixels:(0 - additional_pixels)]
   else:
-    adjusted_applied_doses = applied_dose.doses
+    scale = planned_dose.doses.shape[0] / applied_dose.doses.shape[0]
+    applied_dose.doses = resize_doses(applied_dose.doses, scale)
+    adjusted_applied_doses = np.amax(applied_dose.doses) - applied_dose.doses + np.amin(applied_dose.doses)
   # # save to file
   save_data(applied_path,
             applied_dose.x,

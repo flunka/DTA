@@ -220,7 +220,6 @@ class Run(Resource):
         make_images.run(applied_dose.doses, chosen_dose.doses, args)
     gamma_url = dose_diff_url = van_dyk_url = ""
     result = {'gamma': gamma_url, 'dose_diff': dose_diff_url, 'van_dyk': van_dyk_url}
-    print(np.any(gamma))
     if(np.any(gamma) != None):
       gamma_path = "".join((get_path('gamma'), 'gamma'))
       make_images.make_image(gamma, gamma_path, 2)
