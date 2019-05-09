@@ -135,9 +135,11 @@ def save_data(path, dataX, dataY, doses):
 
 
 def save_txt(path, dataX, dataY, doses):
-  np.savetxt("".join((path, 'dataX.txt')), dataX, delimiter=',')
-  np.savetxt("".join((path, 'dataY.txt')), dataY, delimiter=',')
-  np.savetxt("".join((path, 'doses.txt')), doses, delimiter=',')
+  if(np.any(dataX) != None):
+    np.savetxt("".join((path, 'dataX.txt')), dataX, delimiter=',', fmt="%3d")
+  if(np.any(dataY) != None):
+    np.savetxt("".join((path, 'dataY.txt')), dataY, delimiter=',', fmt="%3d")
+  np.savetxt("".join((path, 'doses.txt')), doses, delimiter=',', fmt="%3d")
 
 
 def order_idexes(cluster_centers):
@@ -194,7 +196,7 @@ def adjust_doses(planned_dose, applied_dose, path):
   else:
     scale = planned_dose.doses.shape[0] / applied_dose.doses.shape[0]
     applied_dose.doses = resize_doses(applied_dose.doses, scale)
-    adjusted_applied_doses = np.amax(applied_dose.doses) - applied_dose.doses + np.amin(applied_dose.doses)
+    adjusted_applied_doses = np.amax(applied_dose.doses) - applied_dose.doses
   # # save to file
   save_data(applied_path,
             applied_dose.x,
@@ -277,7 +279,7 @@ def make_DTA_matrix(adjusted_applied, chosen_plan, plan_resolution):
   frame = range(-max_distance, max_distance + 1)
   resolution_pow2 = plan_resolution**2
 
-  DTA = np.full_like(chosen_plan, 0)
+  DTA = np.full(chosen_plan.shape, 0)
 
   for i in range(0, cols):
     for j in range(0, rows):
@@ -379,7 +381,7 @@ def make_dose_diff_matrix(adjusted_applied, chosen_plan, min_percentage, referen
 
 @jit(nopython=True)
 def make_gamma_matrix(adjusted_applied, chosen_plan, min_percentage, reference_distance_tolerance, reference_dose_tolerance):
-  gamma = np.full_like(chosen_plan, 255.0)
+  gamma = np.full(chosen_plan.shape, 255.0)
   max_value_chosen_plan = np.amax(chosen_plan)
   minimal_value = min_percentage / 100 * max_value_chosen_plan
   cols, rows = adjusted_applied.shape
@@ -431,13 +433,13 @@ def make_gamma_matrix(adjusted_applied, chosen_plan, min_percentage, reference_d
 
 def make_global_reference_distance_tolerance(plan,
                                              reference_distance_to_agreement):
-  return np.full_like(plan, reference_distance_to_agreement)
+  return np.full(plan.shape, reference_distance_to_agreement)
 
 
 def make_global_reference_dose_tolerance(plan, max_dose_diff):
   max_value_plan = np.amax(plan)
   init_dose_tolerance = max_dose_diff * max_value_plan / 100
-  return np.full_like(plan, init_dose_tolerance)
+  return np.full(plan.shape, init_dose_tolerance)
 
 
 def make_clustering_reference_distance_tolerance(chosen_plan, low_gradient_tolerance, high_gradient_tolerance):
@@ -522,7 +524,7 @@ def adjust_min_and_min_doses(applied_dose, chosen_plan):
   min_applied_value = np.amin(applied_dose)
   max_applied_value = np.amax(applied_dose)
   min_planned_value = np.amin(chosen_plan)
-  max_planned_value = np.amin(chosen_plan)
+  max_planned_value = np.amax(chosen_plan)
   return (max_planned_value - min_planned_value) * (applied_dose - min_applied_value) / \
       (max_applied_value - min_applied_value) + min_planned_value
 
