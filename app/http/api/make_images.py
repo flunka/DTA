@@ -273,59 +273,7 @@ def make_van_dyk_matrix(dose_diff, DTA, reference_dose_tolerance, reference_dist
 
 
 @jit(nopython=True)
-def make_DTA_matrix(adjusted_applied, chosen_plan, plan_resolution):
-  max_distance = 10 * plan_resolution
-  cols, rows = adjusted_applied.shape
-  frame = range(-max_distance, max_distance + 1)
-  resolution_pow2 = plan_resolution**2
-
-  DTA = np.full(chosen_plan.shape, 0)
-
-  for i in range(0, cols):
-    for j in range(0, rows):
-      dmin = max_distance
-      DM = adjusted_applied[i, j]
-
-      for k in frame:
-        for l in frame:
-          if (i + k >= 1 and i + k < cols - 1 and j + l >= 1 and j + l < rows - 1):
-            DC = chosen_plan[i + k, j + l]
-            DCX = chosen_plan[i + k, j + l + 1]
-            DCY = chosen_plan[i + k + 1, j + l]
-            DCX1 = chosen_plan[i + k, j + l - 1]
-            DCY1 = chosen_plan[i + k - 1, j + l]
-
-            dx = dy = dx1 = dy1 = d1 = d2 = d3 = d4 = max_distance
-            if DCX != DC:
-              dx = (DM - DC) / (DCX - DC)
-              if dx >= 0 and dx <= 1:
-                d1 = math.sqrt((l + dx)**2 * resolution_pow2 +
-                               k**2 * resolution_pow2)
-            if DCY != DC:
-              dy = (DM - DC) / (DCY - DC)
-              if dy >= 0 and dy <= 1:
-                d2 = math.sqrt(l**2 * resolution_pow2 +
-                               (k + dy)**2 * resolution_pow2)
-            if DCX1 != DC:
-              dx1 = (DM - DC) / (DCX1 - DC)
-              if dx1 >= 0 and dx1 <= 1:
-                d3 = math.sqrt((l + dx1)**2 * resolution_pow2 +
-                               k**2 * resolution_pow2)
-            if DCY1 != DC:
-              dy1 = (DM - DC) / (DCY1 - DC)
-              if dy1 >= 0 and dy1 <= 1:
-                d4 = math.sqrt(l**2 * resolution_pow2 +
-                               (k + dy)**2 * resolution_pow2)
-            minimum_d = min(d1, d2, d3, d4)
-            if(minimum_d < dmin):
-              dmin = minimum_d
-
-      DTA[i, j] = dmin
-  return DTA
-
-
-@jit(nopython=True)
-def make_alt_DTA_matrix(adjusted_applied, chosen_plan, reference_distance_tolerance, min_percentage):
+def make_DTA_matrix(adjusted_applied, chosen_plan, reference_distance_tolerance, min_percentage):
   DTA = 2 * reference_distance_tolerance
   max_value_chosen_plan = np.amax(chosen_plan)
   minimal_value = min_percentage / 100 * max_value_chosen_plan
@@ -550,7 +498,6 @@ def run(applied_dose, chosen_plan, options):
   if(options['dose_diff'] == 'on'):
     dose_diff = make_dose_diff_matrix(applied_dose, chosen_plan, options['min_percentage'], reference_dose_tolerance)
   if(options['van_dyk'] == 'on' and np.any(dose_diff) != None):
-    # DTA_matrix = make_DTA_matrix(applied_dose, chosen_plan, options['plan_resolution'])
-    DTA_matrix = make_alt_DTA_matrix(applied_dose, chosen_plan, reference_distance_tolerance, options['min_percentage'])
+    DTA_matrix = make_DTA_matrix(applied_dose, chosen_plan, reference_distance_tolerance, options['min_percentage'])
     van_dyk = make_van_dyk_matrix(dose_diff, DTA_matrix, reference_dose_tolerance, reference_distance_tolerance)
-  return (gamma, dose_diff, van_dyk, reference_dose_tolerance, reference_distance_tolerance)
+  return (gamma, dose_diff, van_dyk)

@@ -60,16 +60,6 @@ class ActionsAfter extends React.Component {
           type='van_dyk'
           disabled={false} />
         }
-        <ShowButton text="Reference dose tolerance"
-          zIndex={this.state.images[3].z}
-          imageOnClick={()=> this.imageOnClick(3)}
-          type='reference_dose_tolerance'
-          disabled={false} />
-        <ShowButton text="Reference distance tolerance"
-          zIndex={this.state.images[4].z}
-          imageOnClick={()=> this.imageOnClick(4)}
-          type='reference_distance_tolerance'
-          disabled={false} />
       </div>
       )
   }
