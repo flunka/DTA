@@ -126,16 +126,17 @@ class Content extends React.Component {
       uploadButtons: uploadButtons,
       action: action
     });
-    
+    var name = ""
     const form = new FormData();
+    form.append('file', file);
     if (type == 0) {
-      form.append('planned_dose_file', file)
+      name = "planned";
     }
     else if (type == 1) {
-      form.append('applied_dose_file', file);      
+      name = "applied";
     }
 
-    fetch(process.env.API_URL +'/Upload', { // Your POST endpoint
+    fetch(process.env.API_URL +'/dose/' + name, { // Your POST endpoint
       method: 'POST',
       credentials: "include",
       body: form // This is your file object
@@ -202,8 +203,8 @@ class Content extends React.Component {
     this.setState({
         action: action
       });
-    fetch(process.env.API_URL +'/AdjustDoses', { // Your POST endpoint
-      method: 'GET',
+    fetch(process.env.API_URL +'/action/adjust', { // Your POST endpoint
+      method: 'POST',
       credentials: "include",
     }).then(
       response => {
@@ -250,8 +251,8 @@ class Content extends React.Component {
     this.setState({
         action: action
       });
-    fetch(process.env.API_URL +'/AlignDoses', { // Your POST endpoint
-      method: 'GET',
+    fetch(process.env.API_URL +'/action/align', { // Your POST endpoint
+      method: 'POST',
       credentials: "include",
     }).then(
       response => {
@@ -295,7 +296,7 @@ class Content extends React.Component {
       var results = this.state.results;
       results.status = "process";
       this.setState({"results": results})
-      fetch(process.env.API_URL + '/Run?plan=' + this.state.chosen_plan, {
+      fetch(process.env.API_URL + '/action/run?plan=' + this.state.chosen_plan, {
         method: 'POST',
         credentials: "include",
         body: data,

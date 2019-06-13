@@ -20,9 +20,9 @@ class SidebarAsessment extends React.Component {
       )
   }
 
-  renderSidebarButton(name, method, type){
+  renderSidebarButton(name, method, type, disabled){
     return (
-        <Button variant="secondary" className="m-0" block onClick={() => this.props.buttonOnClick(method, type)}>{name}</Button>
+        <Button disabled={disabled} variant="secondary" className="m-0" block onClick={() => this.props.buttonOnClick(method, type)}>{name}</Button>
       )
   }
 
@@ -32,9 +32,9 @@ class SidebarAsessment extends React.Component {
         {this.renderSidebarLabel(this.props.label_text,this.props.label_id)}
         <Collapse in={this.props.isOpen}>
           <div>
-            {this.renderSidebarButton("Global method", 'global', this.props.assessment_id)}
-            {this.renderSidebarButton("Clustering method", 'clustering', this.props.assessment_id)}
-            {this.renderSidebarButton("Point-wise local method", 'local', this.props.assessment_id)}
+            {this.renderSidebarButton("Global method", 'global', this.props.assessment_id, false)}
+            {this.renderSidebarButton("Clustering method", 'clustering', this.props.assessment_id, false)}
+            {this.renderSidebarButton("Point-wise local method", 'local', this.props.assessment_id, true)}
           </div>
         </Collapse>
       </div>

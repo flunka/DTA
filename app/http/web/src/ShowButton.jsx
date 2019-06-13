@@ -20,7 +20,7 @@ class ShowButon extends React.Component {
   }
 
   get_image(type){
-    fetch(process.env.API_URL + '/GetImage?type=' + type , { // Your POST endpoint
+    fetch(process.env.API_URL + '/dose/' + type , { // Your POST endpoint
       method: 'GET',
       credentials: "include"
     }).then(

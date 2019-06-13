@@ -10,6 +10,7 @@ import numpy as np
 import cv2 as cv
 
 import time
+import shutil
 
 import make_images
 
@@ -35,7 +36,29 @@ class DTA(Resource):
   def get(self):
     if 'id' not in session:
       session['id'] = generate_session_id()
-    return {'Success': 'Welcome'}
+
+    links = [{"href": "/dose", "rel": "Dose management", "method": "GET"}]
+    if is_action_allowed("adjust"):
+      links.append({"href": "/action", "rel": "Actions management", "method": "GET"})
+    return {'Success': 'Welcome', "links:": links
+            }
+
+
+def is_action_allowed(name_of_action):
+  if 'id' not in session:
+    session['id'] = generate_session_id()
+  if name_of_action == "adjust":
+    required_files = ["applied/data.npy", "planned/data.npy"]
+  elif name_of_action == "align" or name_of_action == "run_adjusted":
+    required_files = ["adjusted_planned/data.npy"]
+  elif name_of_action == "run_aligned":
+    required_files = ["aligned/data.npy"]
+  result = True
+  required_files = ['/'.join((session['id'], file)) for file in required_files]
+  for file in required_files:
+    path = os.path.join(app.config['UPLOAD_FOLDER'], file)
+    result = result and os.path.exists(path)
+  return result
 
 
 def generate_session_id():
@@ -61,20 +84,50 @@ def create_dose(path):
   return dose
 
 
-class GetImage(Resource):
+class ImageList(Resource):
+
+  def __init__(self):
+    super().__init__()
+
+  def is_dose_available(self, name_of_dose):
+    if 'id' not in session:
+      session['id'] = generate_session_id()
+    required_files = ["{0}/{0}.jpg".format(name_of_dose), "{0}/{0}.nrrd".format(name_of_dose)]
+    result = True
+    required_files = ['/'.join((session['id'], file)) for file in required_files]
+    for file in required_files:
+      path = os.path.join(app.config['UPLOAD_FOLDER'], file)
+      result = result and os.path.exists(path)
+    return result
+
+  def get(self):
+    if 'id' not in session:
+      session['id'] = generate_session_id()
+    links = [
+        {"href": "/doses/planned", "rel": "Upload plan image", "method": "POST"},
+        {"href": "/doses/applied", "rel": "Upload realization image", "method": "POST"}]
+    doses = ["planned", "applied", "adjusted_planned", "adjusted_applied", "aligned", "gamma", "dose_diff", "van_dyk"]
+    links.extend([
+        {"href": "/doses/{}".format(dose),
+         "rel": "Get {} image".format(dose),
+         "method": "GET"}
+        for dose in doses if self.is_dose_available(dose)])
+    return {"links": links}
+
+
+class Image(Resource):
   """docstring for GetImage"""
 
   def __init__(self):
     super().__init__()
     self.parser = reqparse.RequestParser()
-    self.parser.add_argument('type', type=str)
 
-  def get(self):
+  def get(self, name):
     args = self.parser.parse_args()
-    if args['type']:
-      file = '/{0}/{0}.jpg'.format(args['type'])
-      path = get_path(args['type'])
-      img = cv.imread("".join((path, "/{}.jpg".format(args['type']))))
+    if name:
+      file = '/{0}/{0}.jpg'.format(name)
+      path = get_path(name)
+      img = cv.imread("".join((path, "/{}.jpg".format(name))))
     else:
       return abort(403, error_message='No type of image')
     if 'id' in session:
@@ -87,31 +140,30 @@ class GetImage(Resource):
     else:
       return abort(403, error_message='No session id')
 
-
-class UploadFile(Resource):
-  """docstring for UploadFile"""
-
-  def __init__(self):
-    super().__init__()
-    self.parser = reqparse.RequestParser()
-    self.parser.add_argument('planned_dose_file', type=FileStorage, location='files')
-    self.parser.add_argument('applied_dose_file', type=FileStorage, location='files')
-
   def allowed_file(self, filename):
     return '.' in filename \
         and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-  def post(self):
+  def delete_out_of_date_folders(self):
+    if 'id' not in session:
+      session['id'] = generate_session_id()
+    folders = ["adjusted_planned", "adjusted_applied", "aligned", "gamma", "dose_diff"]
+    folders_to_delete = [os.path.join(app.config['UPLOAD_FOLDER'], '/'.join((session['id'], folder)))
+                         for folder in folders]
+    [shutil.rmtree(folder) for folder in folders_to_delete if os.path.exists(folder)]
+
+  def post(self, name):
+    self.parser.add_argument('file', type=FileStorage, location='files')
     args = self.parser.parse_args()
-    uploaded_file = None
     planned = True
-    if args['planned_dose_file']:
-      uploaded_file = args['planned_dose_file']
-    elif args['applied_dose_file']:
-      uploaded_file = args['applied_dose_file']
+    if name == "applied":
       planned = False
+    elif name == "planned":
+      pass
     else:
-      abort(403, error_message='File not selected')
+      return abort(403, error_message='Action not allowed')
+    self.delete_out_of_date_folders()
+    uploaded_file = args['file']
     if uploaded_file and self.allowed_file(uploaded_file.filename):
       filename = secure_filename(uploaded_file.filename)
       folder = 'planned' if planned else 'applied'
@@ -121,6 +173,7 @@ class UploadFile(Resource):
         make_images.make_planned_dose_image(file_name=filename, path=upload_path)
       else:
         make_images.make_applied_dose_image(file_name=filename, path=upload_path)
+
       return {'Success': 'Planned dose file has been uploaded successfully'}
     return abort(403, error_message='File format not allowed')
 
@@ -132,8 +185,10 @@ class AdjustDoses(Resource):
     super().__init__()
     self.parser = reqparse.RequestParser()
 
-  def get(self):
+  def post(self):
     args = self.parser.parse_args()
+    if not is_action_allowed("adjust"):
+      return abort(403, error_message='This action is not allowed!')
     planned_path = get_path('planned')
     applied_path = get_path('applied')
     adjusted_path = "".join((get_path('')[:-1], "adjusted"))
@@ -152,8 +207,10 @@ class AlignDoses(Resource):
     super().__init__()
     self.parser = reqparse.RequestParser()
 
-  def get(self):
+  def post(self):
     args = self.parser.parse_args()
+    if not is_action_allowed("align"):
+      return abort(403, error_message='This action is not allowed!')
     applied_path = get_path('adjusted_applied')
     adjusted_path = get_path('adjusted_planned')
     aligned_path = get_path('aligned')
@@ -194,6 +251,8 @@ class Run(Resource):
 
   def post(self):
     args = self.parser.parse_args()
+    if not is_action_allowed("_".join(("run", args['plan']))):
+      return abort(403, error_message='This action is not allowed!')
     applied_path = get_path('adjusted_applied')
     applied_dose = create_dose(applied_path)
     chosen_dose = None
@@ -230,12 +289,31 @@ class Run(Resource):
     return result
 
 
+class Action(Resource):
+  """docstring for Action"""
+
+  def __init__(self):
+    super().__init__()
+
+  def get(self):
+    if 'id' not in session:
+      session['id'] = generate_session_id()
+    links = []
+    if is_action_allowed("adjust"):
+      links.append({"href": "/action/adjust", "rel": "Adjust doses", "method": "POST"})
+    if is_action_allowed("align"):
+      links.extend([{"href": "/action/align", "rel": "Align doses", "method": "POST"},
+                    {"href": "/action/run", "rel": "Run analysis", "method": "POST"}])
+    return {"links": links}
+
+
 api.add_resource(DTA, '/', '/DTA')
-api.add_resource(AdjustDoses, '/AdjustDoses')
-api.add_resource(AlignDoses, '/AlignDoses')
-api.add_resource(UploadFile, '/Upload')
-api.add_resource(GetImage, '/GetImage')
-api.add_resource(Run, '/Run')
+api.add_resource(Action, '/action')
+api.add_resource(AdjustDoses, '/action/adjust')
+api.add_resource(AlignDoses, '/action/align')
+api.add_resource(ImageList, "/dose")
+api.add_resource(Image, "/dose/<string:name>")
+api.add_resource(Run, '/action/run')
 
 if __name__ == '__main__':
   app.run(debug=True)

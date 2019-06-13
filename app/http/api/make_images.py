@@ -184,6 +184,7 @@ def adjust_doses(planned_dose, applied_dose, path):
             adjusted_planned_dose.x,
             adjusted_planned_dose.y,
             adjusted_planned_dose.doses)
+  save_txt(path, None, None, adjusted_planned_dose.doses)
   make_image(adjusted_planned_dose.doses, "".join((planned_path, "adjusted_planned")), 2)
   make_nrrd(adjusted_planned_dose.doses, "".join((planned_path, "adjusted_planned")))
   if(np.any(planned_dose.x) != None):
@@ -202,6 +203,7 @@ def adjust_doses(planned_dose, applied_dose, path):
             applied_dose.x,
             applied_dose.y,
             adjusted_applied_doses)
+  save_txt(path, None, None, adjusted_applied_doses)
   make_image(adjusted_applied_doses, "".join((applied_path, "adjusted_applied")), 2)
   make_nrrd(adjusted_applied_doses, "".join((applied_path, "adjusted_applied")))
 
@@ -420,12 +422,15 @@ def make_clustering_reference_dose_tolerance(chosen_plan, number_of_clusters, li
 def create_reference_distance_tolerance(chosen_plan, method, options):
   reference_distance_tolerance = None
   if method == 'global':
+    reference_distance_to_agreement = options['reference_distance_to_agreement'] or 1
     reference_distance_tolerance = \
         make_global_reference_distance_tolerance(chosen_plan,
-                                                 options['reference_distance_to_agreement'])
+                                                 reference_distance_to_agreement)
   elif method == 'clustering':
+    low_gradient_tolerance = options['low_gradient_tolerance'] or 1
+    high_gradient_tolerance = options['high_gradient_tolerance'] or 1
     reference_distance_tolerance = \
-        make_clustering_reference_distance_tolerance(chosen_plan, options['low_gradient_tolerance'], options['high_gradient_tolerance'])
+        make_clustering_reference_distance_tolerance(chosen_plan, low_gradient_tolerance, high_gradient_tolerance)
   elif method == 'local':
     pass
   else:
@@ -436,15 +441,21 @@ def create_reference_distance_tolerance(chosen_plan, method, options):
 def create_reference_dose_tolerance(chosen_plan, method, options):
   reference_dose_tolerance = None
   if method == 'global':
+    maximum_dose_difference = options['maximum_dose_difference'] or 1
     reference_dose_tolerance = \
         make_global_reference_dose_tolerance(chosen_plan,
-                                             options['maximum_dose_difference'])
+                                             maximum_dose_difference)
   elif method == 'clustering':
     list_of_tolerances = []
-    for x in range(0, options['number_of_clusters'] + 1):
-      list_of_tolerances.append(options['clustering_dose_tolerance_{}'.format(x)])
+    if options['number_of_clusters']:
+      number_of_clusters = options['number_of_clusters']
+      for x in range(0, number_of_clusters + 1):
+        list_of_tolerances.append(options['clustering_dose_tolerance_{}'.format(x)])
+    else:
+      number_of_clusters = 1
+      list_of_tolerances = [1]
     reference_dose_tolerance = \
-        make_clustering_reference_dose_tolerance(chosen_plan, options['number_of_clusters'], list_of_tolerances)
+        make_clustering_reference_dose_tolerance(chosen_plan, number_of_clusters, list_of_tolerances)
   elif method == 'local':
     pass
   else:
@@ -493,11 +504,12 @@ def run(applied_dose, chosen_plan, options):
         applied_dose = adjust_maximal_doses(applied_dose, chosen_plan)
     elif options['adjust_minimal_doses']:
       applied_dose = adjust_minimal_doses(applied_dose, chosen_plan)
+  min_percentage = options['min_percentage'] or 0
   if(options['gamma'] == 'on'):
-    gamma = make_gamma_matrix(applied_dose, chosen_plan, options['min_percentage'], reference_distance_tolerance, reference_dose_tolerance)
+    gamma = make_gamma_matrix(applied_dose, chosen_plan, min_percentage, reference_distance_tolerance, reference_dose_tolerance)
   if(options['dose_diff'] == 'on'):
-    dose_diff = make_dose_diff_matrix(applied_dose, chosen_plan, options['min_percentage'], reference_dose_tolerance)
+    dose_diff = make_dose_diff_matrix(applied_dose, chosen_plan, min_percentage, reference_dose_tolerance)
   if(options['van_dyk'] == 'on' and np.any(dose_diff) != None):
-    DTA_matrix = make_DTA_matrix(applied_dose, chosen_plan, reference_distance_tolerance, options['min_percentage'])
+    DTA_matrix = make_DTA_matrix(applied_dose, chosen_plan, reference_distance_tolerance, min_percentage)
     van_dyk = make_van_dyk_matrix(dose_diff, DTA_matrix, reference_dose_tolerance, reference_distance_tolerance)
   return (gamma, dose_diff, van_dyk)
