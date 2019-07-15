@@ -1,1 +1,3 @@
-DTA Project v0.0 by Piotr Banas
+DTA Project v1.0 by Piotr Banas
+
+dta.flunka.pl
